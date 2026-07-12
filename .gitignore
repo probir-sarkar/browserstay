@@ -7,7 +7,6 @@ dist
 worker-configuration.d.ts
 package-lock.json
 yarn.lock
-bun.lock
 .vercel
 .output
 .nitro
