@@ -1,7 +1,13 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "toolbox",
-  "compatibility_date": "2025-09-24",
+  "compatibility_date": "2026-07-11",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry"
+  "main": "@tanstack/react-start/server-entry",
+  "routes": [
+    {
+      "pattern": "toolbox.probir.dev",
+      "custom_domain": true
+    }
+  ]
 }
