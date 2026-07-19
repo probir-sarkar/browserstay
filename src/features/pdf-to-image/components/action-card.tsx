@@ -1,12 +1,18 @@
+import { useCallback } from "react";
 import { ActionCard as ReusableActionCard } from "@/shared/components/layout/action-card";
 import { usePdfToImageContext } from "../context";
-import {  PdfService } from "@/shared/services/pdf";
+import { PdfService } from "@/shared/services/pdf";
 
 export function ActionCard() {
-  const { file, settings, setImages, images } = usePdfToImageContext();
+  const { file, settings, setImages, images, processing, setProcessing } = usePdfToImageContext();
 
-  const handleConvert = async () => {
+  const handleConvert = useCallback(async () => {
     if (!file) return;
+
+    setProcessing((draft) => {
+      draft.isProcessing = true;
+      draft.progress = 0;
+    });
 
     setImages([]);
 
@@ -18,11 +24,18 @@ export function ActionCard() {
       });
 
       setImages(result);
+      setProcessing((draft) => {
+        draft.progress = 100;
+      });
     } catch (error) {
       console.error(error);
       // Handle error state if needed
+    } finally {
+      setProcessing((draft) => {
+        draft.isProcessing = false;
+      });
     }
-  };
+  }, [file, settings, setImages, setProcessing]);
 
   const handleDownload = () => {
     PdfService.downloadAll(images);
@@ -32,8 +45,8 @@ export function ActionCard() {
 
   return (
     <ReusableActionCard
-      isProcessing={false}
-      progress={0}
+      isProcessing={processing.isProcessing}
+      progress={processing.progress}
       onConvert={handleConvert}
       onDownload={handleDownload}
       canConvert={!!file}
