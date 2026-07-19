@@ -1,4 +1,4 @@
-import { openPdf, extractPdf } from "clawpdf/browser";
+import { openPdf } from "clawpdf/browser";
 import { createZip } from "../zip";
 
 function getBaseName(file: File): string {
@@ -19,26 +19,32 @@ export interface ImageResult {
   baseName: string;
 }
 
-async function pdfToImages(fileWithInfo: FileWithInfo, options: PdfToImageOptions = {}): Promise<ImageResult[]> {
+async function pdfToImages(
+  file: File,
+  options: PdfToImageOptions = {},
+  onProgress?: (current: number, total: number) => void
+): Promise<ImageResult[]> {
   const { scale = 2, startPage = 1, endPage } = options;
-  const { file, pages } = fileWithInfo;
   const baseName = getBaseName(file);
-  const lastPage = Math.min(endPage ?? pages, pages);
+  const pdf = await openPdf(file);
+  const lastPage = Math.min(endPage ?? pdf.pageCount, pdf.pageCount);
   const pagesArray = Array.from({ length: lastPage - startPage + 1 }, (_, i) => startPage + i);
-  const extracted = await extractPdf(file, {
-    mode: "images",
-    pages: pagesArray,
-    image: {
-      scale: scale
-    }
-  });
-  return extracted.images.map((image) => ({
-    page: image.page,
-    bytes: image.bytes,
-    mimeType: image.mimeType,
-    filename: `${baseName}-page-${image.page}.png`,
-    baseName
-  }));
+  const images: ImageResult[] = [];
+
+  for (let i = 0; i < pagesArray.length; i++) {
+    const page = pagesArray[i];
+    const png = await pdf.page(page).png({ scale });
+    images.push({
+      page,
+      bytes: png,
+      mimeType: "image/png",
+      filename: `${baseName}-page-${page}.png`,
+      baseName
+    });
+    // Report progress after each page
+    onProgress?.(i + 1, pagesArray.length);
+  }
+  return images;
 }
 
 function triggerDownload(blob: Blob, filename: string) {

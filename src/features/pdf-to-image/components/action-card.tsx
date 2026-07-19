@@ -17,16 +17,23 @@ export function ActionCard() {
     setImages([]);
 
     try {
-      const result = await PdfService.pdfToImages(file, {
-        scale: settings.scale,
-        startPage: settings.startPage,
-        endPage: settings.endPage
-      });
+      const result = await PdfService.pdfToImages(
+        file.file,
+        {
+          scale: settings.scale,
+          startPage: settings.startPage,
+          endPage: settings.endPage
+        },
+        (current, total) => {
+          // Update progress as each page is processed
+          const percentage = Math.round((current / total) * 100);
+          setProcessing((draft) => {
+            draft.progress = percentage;
+          });
+        }
+      );
 
       setImages(result);
-      setProcessing((draft) => {
-        draft.progress = 100;
-      });
     } catch (error) {
       console.error(error);
       // Handle error state if needed
