@@ -1,5 +1,6 @@
 import { createZip } from "../zip";
 import { getPdfjsLibWithWorker } from "./processor";
+import { openPdf } from "clawpdf/browser";
 
 function getBaseName(file: File): string {
   const name = file.name.replace(/\.[^/.]+$/, ""); // remove extension
@@ -7,11 +8,9 @@ function getBaseName(file: File): string {
 }
 
 export interface PdfToImageOptions {
-  format?: "image/png" | "image/jpeg";
-  scale?: number; // DPI-like scaling (higher = sharper images)
-  startPage?: number; // default = 1
-  endPage?: number | null; // default = total pages
-  quality?: number; // only for JPEG (0.1 - 1.0)
+  scale?: number;
+  startPage?: number;
+  endPage?: number | null;
 }
 
 export type ImageResult = {
@@ -19,56 +18,28 @@ export type ImageResult = {
   blob: Blob;
   filename: string;
   baseName: string;
-  width: number;
-  height: number;
   url: string;
 };
 
 export async function pdfToImagesBrowser(file: File, options: PdfToImageOptions = {}): Promise<ImageResult[]> {
-  const {
-    format = "image/png",
-    scale = 2,
-    startPage = 1,
-    endPage,
-    quality = 0.92 // default JPEG quality
-  } = options;
+  const { scale = 2, startPage = 1, endPage } = options;
   const baseName = getBaseName(file);
-
-  const pdfjsLib = await getPdfjsLibWithWorker();
   const fileData = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: fileData }).promise;
-
+  const pdf = await openPdf(new Uint8Array(fileData));
+  const lastPage = Math.min(endPage ?? pdf.pageCount, pdf.pageCount);
   const results: ImageResult[] = [];
-
-  const lastPage = endPage && endPage <= pdf.numPages ? endPage : pdf.numPages;
-
   for (let pageNum = startPage; pageNum <= lastPage; pageNum++) {
-    const page = await pdf.getPage(pageNum);
-    const viewport = page.getViewport({ scale });
+    const page = pdf.page(pageNum);
+    const pngBytes = await page.png({ scale });
 
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d")!;
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-
-    await page.render({ canvasContext: context, viewport, canvas }).promise;
-
-    // PNG ignores quality param, JPEG uses it
-    const blob: Blob = await new Promise((resolve) =>
-      canvas.toBlob((b) => resolve(b!), format, format === "image/jpeg" ? quality : undefined)
-    );
-
-    // Create an object URL for preview/download
+    const blob = new Blob([pngBytes as unknown as BlobPart], { type: "image/png" });
     const url = URL.createObjectURL(blob);
 
-    // Push full ImageResult
     results.push({
       page: pageNum,
       blob,
-      filename: `${baseName}-page-${pageNum}.${format === "image/png" ? "png" : "jpg"}`,
+      filename: `${baseName}-page-${pageNum}.png`,
       baseName,
-      width: canvas.width,
-      height: canvas.height,
       url
     });
   }
@@ -91,9 +62,7 @@ export async function downloadAll(images: ImageResult[]) {
   if (!images.length) return;
 
   const baseName = images[0].baseName || "document";
-  const files = Object.fromEntries(
-    images.map((img) => [`${baseName}/${img.filename}`, img.blob])
-  );
+  const files = Object.fromEntries(images.map((img) => [`${baseName}/${img.filename}`, img.blob]));
   const blob = await createZip(files);
   triggerDownload(blob, `${baseName}-images.zip`);
 }

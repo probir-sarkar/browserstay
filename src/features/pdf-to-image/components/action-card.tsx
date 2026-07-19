@@ -4,34 +4,24 @@ import { usePdfToImageContext } from "../context";
 import { pdfToImagesBrowser, downloadAll } from "@/shared/services/pdf";
 
 export function ActionCard() {
-  const { file, settings, isProcessing, setIsProcessing, setImages, setProgress, progress, images } = usePdfToImageContext();
+  const { file, settings, setImages, images } = usePdfToImageContext();
 
   const handleConvert = async () => {
     if (!file) return;
 
-    setIsProcessing(true);
-    setProgress(0);
     setImages([]);
 
     try {
-      // Note: pdfToImagesBrowser currently doesn't expose a progress callback in the signature
-      // I saw in the original file, but if it did, we'd hook it up here.
-      // Assuming it's a simple promise for now as per original code.
       const result = await pdfToImagesBrowser(file.file, {
-        format: settings.format === "png" ? "image/png" : "image/jpeg",
         scale: settings.scale,
         startPage: settings.startPage,
         endPage: settings.endPage,
-        quality: settings.quality,
       });
 
       setImages(result);
-      setProgress(100);
     } catch (error) {
       console.error(error);
       // Handle error state if needed
-    } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -43,8 +33,8 @@ export function ActionCard() {
 
   return (
     <ReusableActionCard
-      isProcessing={isProcessing}
-      progress={progress}
+      isProcessing={false}
+      progress={0}
       onConvert={handleConvert}
       onDownload={handleDownload}
       canConvert={!!file}

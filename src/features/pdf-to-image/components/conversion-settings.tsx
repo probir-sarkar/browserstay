@@ -21,44 +21,6 @@ export function ConversionSettings() {
         <CardTitle>Conversion Settings</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Format */}
-        <div className="space-y-2">
-          <Label>Output Format</Label>
-          <Select
-            value={settings.format}
-            onValueChange={(v) => updateSettings({ format: v as "png" | "jpeg" })}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="png">PNG (Lossless)</SelectItem>
-              <SelectItem value="jpeg">JPEG (Smaller)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Quality (JPEG only) */}
-        {settings.format === "jpeg" && (
-          <div className="space-y-2">
-            <div className="flex justify-between mb-4">
-              <Label>Quality</Label>
-              <span className="text-sm text-muted-foreground">{settings.quality}%</span>
-            </div>
-            <Slider
-              min={50}
-              max={100}
-              step={1}
-              value={[settings.quality]}
-              onValueChange={(vals) => {
-                const val = Array.isArray(vals) ? vals[0] : vals;
-                updateSettings({ quality: val });
-              }}
-              className="w-full"
-            />
-          </div>
-        )}
-
         {/* Scale */}
         <div className="space-y-2">
           <Label>Resolution / Scale</Label>
