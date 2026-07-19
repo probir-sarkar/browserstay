@@ -16,7 +16,8 @@
       "Bash(git push:*)",
       "Bash(npx depcheck:*)",
       "Bash(pnpm run *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(bun add *)"
     ]
   }
 }
