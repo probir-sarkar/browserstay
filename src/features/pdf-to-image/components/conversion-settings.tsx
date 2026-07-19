@@ -1,14 +1,13 @@
 
 import { Label } from "@/shared/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/shared/components/ui/select";
 import { Input } from "@/shared/components/ui/input";
-import { Slider } from "@/shared/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { usePdfToImageContext } from "../context";
 
