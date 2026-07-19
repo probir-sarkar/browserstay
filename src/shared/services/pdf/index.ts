@@ -1,5 +1,6 @@
 import { openPdf } from "clawpdf/browser";
 import { createZip } from "../zip";
+import pLimit from "p-limit";
 
 function getBaseName(file: File): string {
   const name = file.name.replace(/\.[^/.]+$/, ""); // remove extension
@@ -29,21 +30,38 @@ async function pdfToImages(
   const pdf = await openPdf(file);
   const lastPage = Math.min(endPage ?? pdf.pageCount, pdf.pageCount);
   const pagesArray = Array.from({ length: lastPage - startPage + 1 }, (_, i) => startPage + i);
-  const images: ImageResult[] = [];
 
-  for (let i = 0; i < pagesArray.length; i++) {
-    const page = pagesArray[i];
-    const png = await pdf.page(page).png({ scale });
-    images.push({
-      page,
-      bytes: png,
-      mimeType: "image/png",
-      filename: `${baseName}-page-${page}.png`,
-      baseName
-    });
-    // Report progress after each page
-    onProgress?.(i + 1, pagesArray.length);
+  // Handle invalid page range (P1 fix): empty pagesArray means no pages to process
+  if (pagesArray.length === 0) {
+    onProgress?.(1, 1); // Signal completion to prevent stuck progress
+    return [];
   }
+
+  // Process pages concurrently with p-limit (P2 fix)
+  const limit = pLimit(4); // Process up to 4 pages in parallel
+  const images: ImageResult[] = [];
+  let completed = 0;
+
+  const tasks = pagesArray.map((page) =>
+    limit(async () => {
+      const png = await pdf.page(page).png({ scale });
+      const result = {
+        page,
+        bytes: png,
+        mimeType: "image/png",
+        filename: `${baseName}-page-${page}.png`,
+        baseName
+      };
+      // Report progress as each page completes
+      completed++;
+      onProgress?.(completed, pagesArray.length);
+      return result;
+    })
+  );
+
+  const results = await Promise.all(tasks);
+  images.push(...results);
+
   return images;
 }
 
