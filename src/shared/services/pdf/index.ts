@@ -1,5 +1,5 @@
+import { openPdf, extractPdf } from "clawpdf/browser";
 import { createZip } from "../zip";
-import { getPdfjsLibWithWorker } from "./processor";
 
 function getBaseName(file: File): string {
   const name = file.name.replace(/\.[^/.]+$/, ""); // remove extension
@@ -7,73 +7,38 @@ function getBaseName(file: File): string {
 }
 
 export interface PdfToImageOptions {
-  format?: "image/png" | "image/jpeg";
-  scale?: number; // DPI-like scaling (higher = sharper images)
-  startPage?: number; // default = 1
-  endPage?: number | null; // default = total pages
-  quality?: number; // only for JPEG (0.1 - 1.0)
+  scale?: number;
+  startPage?: number;
+  endPage?: number | null;
 }
-
-export type ImageResult = {
+export interface ImageResult {
   page: number;
-  blob: Blob;
+  bytes: Uint8Array;
+  mimeType: string;
   filename: string;
   baseName: string;
-  width: number;
-  height: number;
-  url: string;
-};
+}
 
-export async function pdfToImagesBrowser(file: File, options: PdfToImageOptions = {}): Promise<ImageResult[]> {
-  const {
-    format = "image/png",
-    scale = 2,
-    startPage = 1,
-    endPage,
-    quality = 0.92 // default JPEG quality
-  } = options;
+async function pdfToImages(fileWithInfo: FileWithInfo, options: PdfToImageOptions = {}): Promise<ImageResult[]> {
+  const { scale = 2, startPage = 1, endPage } = options;
+  const { file, pages } = fileWithInfo;
   const baseName = getBaseName(file);
-
-  const pdfjsLib = await getPdfjsLibWithWorker();
-  const fileData = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: fileData }).promise;
-
-  const results: ImageResult[] = [];
-
-  const lastPage = endPage && endPage <= pdf.numPages ? endPage : pdf.numPages;
-
-  for (let pageNum = startPage; pageNum <= lastPage; pageNum++) {
-    const page = await pdf.getPage(pageNum);
-    const viewport = page.getViewport({ scale });
-
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d")!;
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-
-    await page.render({ canvasContext: context, viewport, canvas }).promise;
-
-    // PNG ignores quality param, JPEG uses it
-    const blob: Blob = await new Promise((resolve) =>
-      canvas.toBlob((b) => resolve(b!), format, format === "image/jpeg" ? quality : undefined)
-    );
-
-    // Create an object URL for preview/download
-    const url = URL.createObjectURL(blob);
-
-    // Push full ImageResult
-    results.push({
-      page: pageNum,
-      blob,
-      filename: `${baseName}-page-${pageNum}.${format === "image/png" ? "png" : "jpg"}`,
-      baseName,
-      width: canvas.width,
-      height: canvas.height,
-      url
-    });
-  }
-
-  return results;
+  const lastPage = Math.min(endPage ?? pages, pages);
+  const pagesArray = Array.from({ length: lastPage - startPage + 1 }, (_, i) => startPage + i);
+  const extracted = await extractPdf(file, {
+    mode: "images",
+    pages: pagesArray,
+    image: {
+      scale: scale
+    }
+  });
+  return extracted.images.map((image) => ({
+    page: image.page,
+    bytes: image.bytes,
+    mimeType: image.mimeType,
+    filename: `${baseName}-page-${image.page}.png`,
+    baseName
+  }));
 }
 
 function triggerDownload(blob: Blob, filename: string) {
@@ -87,40 +52,31 @@ function triggerDownload(blob: Blob, filename: string) {
   setTimeout(() => URL.revokeObjectURL(url), 500);
 }
 
-export async function downloadAll(images: ImageResult[]) {
+async function downloadAll(images: ImageResult[]) {
   if (!images.length) return;
-
   const baseName = images[0].baseName || "document";
-  const files = Object.fromEntries(
-    images.map((img) => [`${baseName}/${img.filename}`, img.blob])
-  );
+  const files = Object.fromEntries(images.map((img) => [`${baseName}/${img.filename}`, img.bytes]));
   const blob = await createZip(files);
   triggerDownload(blob, `${baseName}-images.zip`);
 }
 
-export interface FileInfo {
+export interface FileWithInfo {
   name: string;
   size: number;
   pages: number;
   file: File;
 }
 
-export async function getFileInfo(file: File): Promise<FileInfo> {
+async function getFileInfo(file: File): Promise<FileWithInfo> {
   const name = file.name;
   const size = file.size; // raw bytes
-
-  let pages = 0;
-
-  if (file.type === "application/pdf") {
-    const arrayBuffer = await file.arrayBuffer();
-    const pdfjsLib = await getPdfjsLibWithWorker();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    pages = pdf.numPages;
-  }
+  const pdf = await openPdf(file);
   return {
     name,
     size,
-    pages,
+    pages: pdf.pageCount,
     file
   };
 }
+
+export const PdfService = { pdfToImages, downloadAll, getFileInfo };

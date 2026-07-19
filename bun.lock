@@ -13,6 +13,7 @@
         "@tanstack/react-start": "^1.168.17",
         "browser-image-compression": "^2.0.2",
         "class-variance-authority": "^0.7.1",
+        "clawpdf": "^0.3.0",
         "clsx": "^2.1.1",
         "es-toolkit": "^1.47.0",
         "fflate": "^0.8.3",
@@ -657,6 +658,8 @@
     "chokidar": ["chokidar@5.0.0", "", { "dependencies": { "readdirp": "5.0.0" } }, "sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw=="],
 
     "class-variance-authority": ["class-variance-authority@0.7.1", "", { "dependencies": { "clsx": "2.1.1" } }, "sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg=="],
+
+    "clawpdf": ["clawpdf@0.3.0", "", { "bin": { "clawpdf": "dist/cli.js" } }, "sha512-41+3AnKk9yek2sm+/9XvUlDTN8Wi+ag7fmxZuqw+ySn4lqaf/fCgLeamqPLiXY4gVbizKEHGoTG/JrIIFNE2rw=="],
 
     "cli-cursor": ["cli-cursor@5.0.0", "", { "dependencies": { "restore-cursor": "5.1.0" } }, "sha512-aCj4O5wKyszjMmDT4tZj93kxyydN/K5zPWSCe6/0AV/AA1pqe5ZBIw0a2ZfPQV7lL5/yb5HsUreJ6UFAF1tEQw=="],
 

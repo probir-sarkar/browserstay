@@ -19,6 +19,7 @@
     "@tanstack/react-start": "^1.168.17",
     "browser-image-compression": "^2.0.2",
     "class-variance-authority": "^0.7.1",
+    "clawpdf": "^0.3.0",
     "clsx": "^2.1.1",
     "es-toolkit": "^1.47.0",
     "fflate": "^0.8.3",

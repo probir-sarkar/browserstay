@@ -1,8 +1,4 @@
-import { useRef } from "react";
-import { Upload } from "lucide-react";
-import { cn } from "@/shared/utils";
-import { Button } from "@/shared/components/ui/button";
-import { getFileInfo } from "@/shared/services/pdf";
+import { PdfService } from "@/shared/services/pdf";
 import { usePdfToImageContext } from "../context";
 import { DropZone } from "@/shared/components/common/drop-zone";
 
@@ -18,7 +14,7 @@ export function PdfDropZone() {
     }
 
     try {
-      const info = await getFileInfo(file);
+      const info = await PdfService.getFileInfo(file);
       setFile(info);
       setError(null);
     } catch (err) {

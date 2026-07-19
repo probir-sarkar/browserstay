@@ -1,12 +1,8 @@
-import { type FileInfo, type ImageResult } from "@/shared/services/pdf";
+import { type FileWithInfo, type ImageResult } from "@/shared/services/pdf";
 
-export type { FileInfo, ImageResult };
-
-export type ImageFormat = "png" | "jpeg";
+export type { FileWithInfo, ImageResult };
 
 export interface PdfToImageSettings {
-  format: ImageFormat;
-  quality: number;
   scale: number;
   startPage: number;
   endPage: number | null;
