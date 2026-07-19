@@ -11,7 +11,7 @@ export function ActionCard() {
     setImages([]);
 
     try {
-      const result = await PdfService.pdfToImages(file.file, {
+      const result = await PdfService.pdfToImages(file, {
         scale: settings.scale,
         startPage: settings.startPage,
         endPage: settings.endPage

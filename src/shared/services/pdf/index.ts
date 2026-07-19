@@ -19,11 +19,11 @@ export interface ImageResult {
   baseName: string;
 }
 
-async function pdfToImages(file: File, options: PdfToImageOptions = {}): Promise<ImageResult[]> {
+async function pdfToImages(fileWithInfo: FileWithInfo, options: PdfToImageOptions = {}): Promise<ImageResult[]> {
   const { scale = 2, startPage = 1, endPage } = options;
+  const { file, pages } = fileWithInfo;
   const baseName = getBaseName(file);
-  const pdf = await openPdf(file);
-  const lastPage = Math.min(endPage ?? pdf.pageCount, pdf.pageCount);
+  const lastPage = Math.min(endPage ?? pages, pages);
   const pagesArray = Array.from({ length: lastPage - startPage + 1 }, (_, i) => startPage + i);
   const extracted = await extractPdf(file, {
     mode: "images",
@@ -60,14 +60,14 @@ async function downloadAll(images: ImageResult[]) {
   triggerDownload(blob, `${baseName}-images.zip`);
 }
 
-export interface FileInfo {
+export interface FileWithInfo {
   name: string;
   size: number;
   pages: number;
   file: File;
 }
 
-async function getFileInfo(file: File): Promise<FileInfo> {
+async function getFileInfo(file: File): Promise<FileWithInfo> {
   const name = file.name;
   const size = file.size; // raw bytes
   const pdf = await openPdf(file);
@@ -78,6 +78,5 @@ async function getFileInfo(file: File): Promise<FileInfo> {
     file
   };
 }
-
 
 export const PdfService = { pdfToImages, downloadAll, getFileInfo };

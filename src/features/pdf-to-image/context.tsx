@@ -1,13 +1,13 @@
 import { createContext, useContext, ReactNode, useState, useCallback } from "react";
-import type { FileInfo, ImageResult, PdfToImageSettings } from "./types";
+import type { FileWithInfo, ImageResult, PdfToImageSettings } from "./types";
 import { DEFAULT_PDF_TO_IMAGE_SETTINGS } from "./constants";
 
 interface PdfToImageContextValue {
-  file: FileInfo | null;
+  file: FileWithInfo | null;
   settings: PdfToImageSettings;
   images: ImageResult[];
   error: string | null;
-  setFile: (file: FileInfo | null) => void;
+  setFile: (file: FileWithInfo | null) => void;
   updateSettings: (settings: Partial<PdfToImageSettings>) => void;
   setImages: (images: ImageResult[]) => void;
   setError: (error: string | null) => void;
@@ -17,7 +17,7 @@ interface PdfToImageContextValue {
 const PdfToImageContext = createContext<PdfToImageContextValue | null>(null);
 
 export function PdfToImageProvider({ children }: { children: ReactNode }) {
-  const [file, setFile] = useState<FileInfo | null>(null);
+  const [file, setFile] = useState<FileWithInfo | null>(null);
   const [settings, setSettings] = useState<PdfToImageSettings>(DEFAULT_PDF_TO_IMAGE_SETTINGS);
   const [images, setImages] = useState<ImageResult[]>([]);
   const [error, setError] = useState<string | null>(null);
