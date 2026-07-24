@@ -98,10 +98,16 @@ async function getFileInfo(file: File): Promise<FileWithInfo> {
   const size = file.size; // raw bytes
   const arrayBuffer = await file.arrayBuffer();
   const pdfDoc = await PDFDocument.load(arrayBuffer);
+  const pageCount = pdfDoc.getPageCount();
+
+  if (pageCount === 0) {
+    throw new Error("The PDF file contains no pages. Please select a valid PDF with at least one page.");
+  }
+
   return {
     name,
     size,
-    pages: pdfDoc.getPageCount(),
+    pages: pageCount,
     file
   };
 }
