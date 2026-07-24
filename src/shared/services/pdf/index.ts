@@ -40,7 +40,7 @@ async function pdfToImages(
   }
 
   // Process pages concurrently with p-limit (P2 fix)
-  const limit = pLimit(4); // Process up to 4 pages in parallel
+  const limit = pLimit(10); // Process up to 10 pages in parallel
   const images: ImageResult[] = [];
   let completed = 0;
 
@@ -122,18 +122,23 @@ async function splitAllPages(file: File, pageCount: number, baseName: string): P
   const arrayBuffer = await file.arrayBuffer();
   const pdfDoc = await PDFDocument.load(arrayBuffer);
 
+  const limit = pLimit(10); // Process up to 10 pages in parallel
   const files: Record<string, Blob> = {};
 
-  for (let i = 0; i < pageCount; i++) {
-    const newPdf = await PDFDocument.create();
-    const [copiedPage] = await newPdf.copyPages(pdfDoc, [i]);
-    newPdf.addPage(copiedPage);
-    const pdfBytes = await newPdf.save({
-      useObjectStreams: true
-    });
+  const tasks = Array.from({ length: pageCount }, (_, i) =>
+    limit(async () => {
+      const newPdf = await PDFDocument.create();
+      const [copiedPage] = await newPdf.copyPages(pdfDoc, [i]);
+      newPdf.addPage(copiedPage);
+      const pdfBytes = await newPdf.save({
+        useObjectStreams: true
+      });
 
-    files[`${baseName}-page-${i + 1}.pdf`] = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
-  }
+      files[`${baseName}-page-${i + 1}.pdf`] = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+    })
+  );
+
+  await Promise.all(tasks);
 
   return files;
 }
