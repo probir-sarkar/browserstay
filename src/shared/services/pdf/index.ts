@@ -1,12 +1,13 @@
 import { openPdf } from "clawpdf/browser";
 import { createZip } from "../zip";
 import pLimit from "p-limit";
+import { PDFDocument } from "pdf-lib";
 
 function getBaseName(file: File): string {
-  const name = file.name.replace(/\.[^/.]+$/, ""); // remove extension
-  return name || "document";
+  const { name } = file;
+  const dot = name.lastIndexOf(".");
+  return dot > 0 ? name.slice(0, dot) : name || "document";
 }
-
 export interface PdfToImageOptions {
   scale?: number;
   startPage?: number;
@@ -27,7 +28,8 @@ async function pdfToImages(
 ): Promise<ImageResult[]> {
   const { scale = 2, startPage = 1, endPage } = options;
   const baseName = getBaseName(file);
-  const pdf = await openPdf(file);
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await openPdf(arrayBuffer);
   const lastPage = Math.min(endPage ?? pdf.pageCount, pdf.pageCount);
   const pagesArray = Array.from({ length: lastPage - startPage + 1 }, (_, i) => startPage + i);
 
@@ -38,7 +40,7 @@ async function pdfToImages(
   }
 
   // Process pages concurrently with p-limit (P2 fix)
-  const limit = pLimit(4); // Process up to 4 pages in parallel
+  const limit = pLimit(10); // Process up to 10 pages in parallel
   const images: ImageResult[] = [];
   let completed = 0;
 
@@ -94,13 +96,57 @@ export interface FileWithInfo {
 async function getFileInfo(file: File): Promise<FileWithInfo> {
   const name = file.name;
   const size = file.size; // raw bytes
-  const pdf = await openPdf(file);
+  const arrayBuffer = await file.arrayBuffer();
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
+  const pageCount = pdfDoc.getPageCount();
+
+  if (pageCount === 0) {
+    throw new Error("The PDF file contains no pages. Please select a valid PDF with at least one page.");
+  }
+
   return {
     name,
     size,
-    pages: pdf.pageCount,
+    pages: pageCount,
     file
   };
 }
 
-export const PdfService = { pdfToImages, downloadAll, getFileInfo };
+async function extractPagesAsPdf(file: File, pageIndices: number[]): Promise<Blob> {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
+  const newPdf = await PDFDocument.create();
+  const copiedPages = await newPdf.copyPages(pdfDoc, pageIndices);
+  copiedPages.forEach((page) => newPdf.addPage(page));
+  const pdfBytes = await newPdf.save({
+    useObjectStreams: true
+  });
+  return new Blob([new Uint8Array(pdfBytes)], { type: "application/pdf" });
+}
+
+async function splitAllPages(file: File, pageCount: number, baseName: string): Promise<Record<string, Blob>> {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
+
+  const limit = pLimit(10); // Process up to 10 pages in parallel
+  const files: Record<string, Blob> = {};
+
+  const tasks = Array.from({ length: pageCount }, (_, i) =>
+    limit(async () => {
+      const newPdf = await PDFDocument.create();
+      const [copiedPage] = await newPdf.copyPages(pdfDoc, [i]);
+      newPdf.addPage(copiedPage);
+      const pdfBytes = await newPdf.save({
+        useObjectStreams: true
+      });
+
+      files[`${baseName}-page-${i + 1}.pdf`] = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+    })
+  );
+
+  await Promise.all(tasks);
+
+  return files;
+}
+
+export const PdfService = { pdfToImages, downloadAll, getFileInfo, extractPagesAsPdf, splitAllPages };

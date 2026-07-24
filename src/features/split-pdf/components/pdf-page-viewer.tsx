@@ -50,7 +50,7 @@ function PageThumbnail({ file, pageNumber, selected, onClick }: PageThumbnailPro
       </div>
 
       <div className="flex h-full w-full items-center justify-center p-3">
-        <Document  file={file}>
+        <Document file={file}>
           <Page
             pageNumber={pageNumber}
             width={180}
