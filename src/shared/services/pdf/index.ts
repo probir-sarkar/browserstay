@@ -1,12 +1,13 @@
 import { openPdf } from "clawpdf/browser";
 import { createZip } from "../zip";
 import pLimit from "p-limit";
+import { PDFDocument } from "pdf-lib";
 
 function getBaseName(file: File): string {
-  const name = file.name.replace(/\.[^/.]+$/, ""); // remove extension
-  return name || "document";
+  const { name } = file;
+  const dot = name.lastIndexOf(".");
+  return dot > 0 ? name.slice(0, dot) : name || "document";
 }
-
 export interface PdfToImageOptions {
   scale?: number;
   startPage?: number;
@@ -27,7 +28,8 @@ async function pdfToImages(
 ): Promise<ImageResult[]> {
   const { scale = 2, startPage = 1, endPage } = options;
   const baseName = getBaseName(file);
-  const pdf = await openPdf(file);
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await openPdf(arrayBuffer);
   const lastPage = Math.min(endPage ?? pdf.pageCount, pdf.pageCount);
   const pagesArray = Array.from({ length: lastPage - startPage + 1 }, (_, i) => startPage + i);
 
@@ -94,11 +96,12 @@ export interface FileWithInfo {
 async function getFileInfo(file: File): Promise<FileWithInfo> {
   const name = file.name;
   const size = file.size; // raw bytes
-  const pdf = await openPdf(file);
+  const arrayBuffer = await file.arrayBuffer();
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
   return {
     name,
     size,
-    pages: pdf.pageCount,
+    pages: pdfDoc.getPageCount(),
     file
   };
 }

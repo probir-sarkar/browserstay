@@ -10,7 +10,8 @@ import { createZip } from "@/shared/services/zip";
 import { downloadBlob } from "@/shared/services/download";
 
 export function SplitControls() {
-  const { fileData, settings, selectedPages, isProcessing, setIsProcessing, setError, updateSettings } = useSplitPdfContext();
+  const { fileData, settings, selectedPages, isProcessing, setIsProcessing, setError, updateSettings } =
+    useSplitPdfContext();
 
   const handleSplit = async () => {
     if (!fileData) return;
@@ -26,15 +27,14 @@ export function SplitControls() {
           return;
         }
 
-        const indices = selectedPages.map(p => p - 1);
-        const blob = await extractPages(fileData.file, indices, fileData.fileName);
+        const indices = selectedPages.map((p) => p - 1);
+        const blob = await extractPages(fileData.file, indices);
         downloadBlob(blob, `${fileData.fileName}-extracted.pdf`);
       } else {
         const files = await splitAllPages(fileData.file, fileData.pageCount, fileData.fileName);
         const zipBlob = await createZip(files);
         downloadBlob(zipBlob, `${fileData.fileName}-split.zip`);
       }
-
     } catch {
       setError("An error occurred while splitting the PDF.");
     } finally {
@@ -90,12 +90,7 @@ export function SplitControls() {
         )}
       </CardContent>
       <CardFooter>
-        <Button
-          className="w-full"
-          size="lg"
-          onClick={handleSplit}
-          disabled={isDisabled}
-        >
+        <Button className="w-full" size="lg" onClick={handleSplit} disabled={isDisabled}>
           {isProcessing ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -103,7 +98,11 @@ export function SplitControls() {
             </>
           ) : (
             <>
-              {settings.splitMode === "extract" ? <Download className="mr-2 h-4 w-4" /> : <Scissors className="mr-2 h-4 w-4" />}
+              {settings.splitMode === "extract" ? (
+                <Download className="mr-2 h-4 w-4" />
+              ) : (
+                <Scissors className="mr-2 h-4 w-4" />
+              )}
               {settings.splitMode === "extract" ? "Download PDF" : "Split & Download ZIP"}
             </>
           )}
