@@ -106,4 +106,36 @@ async function getFileInfo(file: File): Promise<FileWithInfo> {
   };
 }
 
-export const PdfService = { pdfToImages, downloadAll, getFileInfo };
+async function extractPagesAsPdf(file: File, pageIndices: number[]): Promise<Blob> {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
+  const newPdf = await PDFDocument.create();
+  const copiedPages = await newPdf.copyPages(pdfDoc, pageIndices);
+  copiedPages.forEach((page) => newPdf.addPage(page));
+  const pdfBytes = await newPdf.save({
+    useObjectStreams: true
+  });
+  return new Blob([new Uint8Array(pdfBytes)], { type: "application/pdf" });
+}
+
+async function splitAllPages(file: File, pageCount: number, baseName: string): Promise<Record<string, Blob>> {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
+
+  const files: Record<string, Blob> = {};
+
+  for (let i = 0; i < pageCount; i++) {
+    const newPdf = await PDFDocument.create();
+    const [copiedPage] = await newPdf.copyPages(pdfDoc, [i]);
+    newPdf.addPage(copiedPage);
+    const pdfBytes = await newPdf.save({
+      useObjectStreams: true
+    });
+
+    files[`${baseName}-page-${i + 1}.pdf`] = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+  }
+
+  return files;
+}
+
+export const PdfService = { pdfToImages, downloadAll, getFileInfo, extractPagesAsPdf, splitAllPages };
