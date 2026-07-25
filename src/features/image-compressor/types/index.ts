@@ -9,10 +9,7 @@ export interface ImageFile {
 
 export interface CompressionSettings {
   quality: number;
-  maxWidth?: number;
-  maxHeight?: number;
-  outputFormat: 'original' | 'jpeg' | 'png' | 'webp';
-  targetSize?: number; // in KB
+  outputFormat: "jpeg" | "webp";
 }
 
 export interface CompressionOptions {

@@ -1,14 +1,9 @@
-import type { ImageFile, CompressionSettings } from "../types";
+// worker.ts
+import { expose } from "comlink";
+import type { CompressionSettings, CompressResult } from "./types";
 import { encode as encodeJpeg, decode as decodeJpeg } from "@jsquash/jpeg";
 import { encode as encodeWebp, decode as decodeWebp } from "@jsquash/webp";
 import { decode as decodePng } from "@jsquash/png";
-
-export interface CompressResult {
-  compressedFile: File;
-  originalSize: number;
-  compressedSize: number;
-  compressionRatio: number;
-}
 
 async function decodeToImageData(file: File): Promise<ImageData> {
   const buffer = await file.arrayBuffer();
@@ -27,7 +22,7 @@ async function decodeToImageData(file: File): Promise<ImageData> {
   return ctx.getImageData(0, 0, bitmap.width, bitmap.height);
 }
 
-export async function compressImage(file: File, settings: CompressionSettings): Promise<CompressResult> {
+async function compressImage(file: File, settings: CompressionSettings): Promise<CompressResult> {
   if (!file.type.startsWith("image/")) {
     throw new Error("File must be an image");
   }
@@ -64,22 +59,8 @@ export async function compressImage(file: File, settings: CompressionSettings): 
   };
 }
 
-export function createImageFile(file: File): ImageFile {
-  const preview = URL.createObjectURL(file);
-  return {
-    id: `${file.name}-${file.size}-${Date.now()}`,
-    file,
-    preview,
-    originalSize: file.size
-  };
-}
+// Expose the compressImage function to the main thread
+const workerApi = { compressImage };
+export type WorkerApi = typeof workerApi;
 
-export function revokeImageFilePreview(file: ImageFile): void {
-  URL.revokeObjectURL(file.preview);
-}
-
-export function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return bytes + " B";
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
-}
+expose(workerApi);
