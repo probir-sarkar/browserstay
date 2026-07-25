@@ -2,7 +2,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Loader2, Download } from "lucide-react";
 import { useImageCompressorContext } from "../context";
-import { compressImage } from "@/shared/services";
+import { compressImages } from "@/shared/services";
 import { createZip } from "@/shared/services/zip";
 import { downloadBlob } from "@/shared/services/download";
 
@@ -20,23 +20,33 @@ export function ImageCompressorActionCard() {
     setError(null);
 
     try {
-      // Compress all images first
+      // Compress all images with controlled concurrency
+      const inputs = files.map((imageFile) => ({
+        file: imageFile.file,
+        settings,
+        id: imageFile.id
+      }));
+
+      const results = await compressImages(inputs);
+
+      // Build compressed files map
       const compressedFiles: Record<string, File> = {};
-      for (const imageFile of files) {
-        const result = await compressImage(imageFile.file, settings);
-        // Update compressed size
-        updateCompressedSize(imageFile.id, result.compressedSize);
+      for (const { input, result } of results) {
+        // Update compressed size for each file
+        if (input.id) {
+          updateCompressedSize(input.id, result.compressedSize);
+        }
 
         const ext = result.compressedFile.type.split("/")[1];
-        const fileName = `${imageFile.file.name.split(".")[0]}_compressed.${ext}`;
+        const fileName = `${input.file.name.split(".")[0]}_compressed.${ext}`;
         compressedFiles[fileName] = result.compressedFile;
       }
 
       // Download based on file count
       if (files.length === 1) {
         // Single file - download directly
-        const fileName = Object.keys(compressedFiles)[0];
-        downloadBlob(compressedFiles[fileName], fileName);
+        const [[fileName, file]] = Object.entries(compressedFiles);
+        downloadBlob(file, fileName);
       } else {
         // Multiple files - zip and download
         const zipBlob = await createZip(compressedFiles);
