@@ -39,7 +39,8 @@ export function ImageCompressorActionCard() {
 
         const ext = result.compressedFile.type.split("/")[1];
         const fileName = `${input.file.name.split(".")[0]}_compressed.${ext}`;
-        compressedFiles[fileName] = result.compressedFile;
+        const fileName = `${input.file.name.split(".")[0]}_compressed.${ext}`;
+        compressedFiles[`${input.id}_${fileName}`] = result.compressedFile;
       }
 
       // Download based on file count
