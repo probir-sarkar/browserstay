@@ -3,6 +3,7 @@ import { Label } from "@/shared/components/ui/label";
 import { Slider } from "@/shared/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { useImageCompressorContext } from "../context";
+import { OUTPUT_FORMATS } from "../constants";
 
 export function ImageCompressorSettings() {
   const { settings, updateSettings } = useImageCompressorContext();
@@ -17,7 +18,7 @@ export function ImageCompressorSettings() {
           <Label htmlFor="quality">Quality: {settings.quality}%</Label>
           <Slider
             id="quality"
-            value={settings.quality}
+            value={[settings.quality]}
             onValueChange={(value) => updateSettings({ quality: Array.isArray(value) ? value[0] : value })}
             min={1}
             max={100}
@@ -30,14 +31,17 @@ export function ImageCompressorSettings() {
           <Label htmlFor="format">Output Format</Label>
           <Select
             value={settings.outputFormat}
-            onValueChange={(value) => value && updateSettings({ outputFormat: value })}
+            onValueChange={(value) => updateSettings({ outputFormat: value as "jpeg" | "webp" })}
           >
             <SelectTrigger className="w-full" id="format">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="jpeg">JPEG (Best compression)</SelectItem>
-              <SelectItem value="webp">WebP (Modern format)</SelectItem>
+              {OUTPUT_FORMATS.map((format) => (
+                <SelectItem key={format.value} value={format.value}>
+                  {format.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

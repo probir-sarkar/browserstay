@@ -17,7 +17,8 @@
       "Bash(npx depcheck:*)",
       "Bash(pnpm run *)",
       "Bash(npx tsc *)",
-      "Bash(bun add *)"
+      "Bash(bun add *)",
+      "Bash(npm run *)"
     ]
   }
 }

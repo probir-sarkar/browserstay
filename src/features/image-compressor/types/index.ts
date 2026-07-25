@@ -11,11 +11,3 @@ export interface CompressionSettings {
   quality: number;
   outputFormat: "jpeg" | "webp";
 }
-
-export interface CompressionOptions {
-  maxSizeMB: number;
-  maxWidthOrHeight?: number;
-  useWebWorker: boolean;
-  fileType?: string;
-  initialQuality: number;
-}
