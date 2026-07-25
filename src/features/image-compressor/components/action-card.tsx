@@ -2,7 +2,10 @@ import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Loader2, Download } from "lucide-react";
 import { useImageCompressorContext } from "../context";
-import { compressImage } from "@/shared/services";
+import { compressImages } from "@/shared/services";
+import { createZip } from "@/shared/services/zip";
+import { downloadBlob } from "@/shared/services/download";
+import { getBaseName } from "@/shared/services/file";
 
 export function ImageCompressorActionCard() {
   const { files, settings, isCompressing, setIsCompressing, setError, updateCompressedSize } =
@@ -18,21 +21,40 @@ export function ImageCompressorActionCard() {
     setError(null);
 
     try {
-      for (const imageFile of files) {
-        const result = await compressImage(imageFile.file, settings);
-        // Update compressed size
-        updateCompressedSize(imageFile.id, result.compressedSize);
+      // Compress all images with controlled concurrency
+      const inputs = files.map((imageFile) => ({
+        file: imageFile.file,
+        settings,
+        id: imageFile.id
+      }));
 
-        // Download the compressed image
-        const url = URL.createObjectURL(result.compressedFile);
-        const link = document.createElement("a");
-        link.href = url;
+      const results = await compressImages(inputs);
+
+      // Build compressed files map
+      const compressedFiles: Record<string, File> = {};
+      for (const { input, result } of results) {
+        // Update compressed size for each file
+        if (input.id) {
+          updateCompressedSize(input.id, result.compressedSize);
+        }
         const ext = result.compressedFile.type.split("/")[1];
-        link.download = `${imageFile.file.name.split(".")[0]}_compressed.${ext}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        const baseName = `${getBaseName(input.file)}_compressed`;
+        let fileName = `${baseName}.${ext}`;
+        let counter = 2;
+        while (fileName in compressedFiles) {
+          fileName = `${baseName}_${counter}.${ext}`;
+          counter++;
+        }
+        compressedFiles[fileName] = result.compressedFile;
+      }
+
+
+      if (files.length === 1) {
+        const [[fileName, file]] = Object.entries(compressedFiles);
+        downloadBlob(file, fileName);
+      } else {
+        const zipBlob = await createZip(compressedFiles);
+        downloadBlob(zipBlob, `compressed_images_${Date.now()}.zip`);
       }
     } catch (err) {
       console.error(err);

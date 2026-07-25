@@ -1,11 +1,11 @@
 import { createFileRoute, ClientOnly } from '@tanstack/react-router'
 import { PageHeader } from "@/shared/components/layout/page-header"
 import { HowItWorks } from "@/shared/components/layout/how-it-works"
+import { FAQSection } from "@/shared/components/layout/faq-section"
 import { ImageConversionSettings } from "@/features/image-converter/components/conversion-settings"
 import { ImageDropZone } from "@/features/image-converter/components/image-drop-zone"
 import { FileList } from "@/features/image-converter/components/file-list"
 import { ActionCard } from "@/features/image-converter/components/action-card"
-import { FAQ } from "@/features/image-converter/components/faq"
 import { ImageConverterProvider } from "@/features/image-converter/context"
 import { BASE_URL } from "@/lib/seo"
 
@@ -88,7 +88,26 @@ function ImageConverterPage() {
         </section>
 
         <section className="max-w-3xl mx-auto mb-12">
-          <FAQ />
+          <FAQSection
+            items={[
+              {
+                question: "Is it really offline?",
+                answer: "Yes. All image processing happens in your browser using modern web technologies. Your photos are never uploaded to any server."
+              },
+              {
+                question: "What formats are supported?",
+                answer: "We support input for most common image formats like JPG, PNG, WebP, GIF, and others. You can convert them to JPG, PNG, WebP, or AVIF."
+              },
+              {
+                question: "How do you ensure highest quality?",
+                answer: "We use WebAssembly (WASM) for high-performance image processing. This ensures the highest quality conversion and compression while maintaining fast performance, all running locally in your browser."
+              },
+              {
+                question: "Limits on file size?",
+                answer: "Since processing is local, the limit depends on your device's memory. Most modern devices can handle very large images easily."
+              }
+            ]}
+          />
         </section>
       </div>
     </main>

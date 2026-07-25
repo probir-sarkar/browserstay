@@ -31,7 +31,7 @@ async function decodeToImageData(file: File): Promise<ImageData> {
     bitmap.close();
   }
 }
-async function compressImage(file: File, settings: CompressionSettings): Promise<CompressResult> {
+async function compressImageWorker(file: File, settings: CompressionSettings): Promise<CompressResult> {
   if (!file.type.startsWith("image/")) {
     throw new Error("File must be an image");
   }
@@ -68,7 +68,7 @@ async function compressImage(file: File, settings: CompressionSettings): Promise
   };
 }
 
-const api = { compressImage };
+const api = { compressImageWorker };
 export type CompressionWorkerApi = typeof api;
 
 Comlink.expose(api);
