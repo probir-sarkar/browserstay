@@ -45,7 +45,7 @@ export function ImageCompressorActionCard() {
           fileName = `${baseName}_${counter}.${ext}`;
           counter++;
         }
-        compressedFiles[`${input.id}_${fileName}`] = result.compressedFile;
+        compressedFiles[fileName] = result.compressedFile;
       }
 
 
