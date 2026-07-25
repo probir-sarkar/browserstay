@@ -72,6 +72,27 @@ Example:
 - Check for existing worker usage before suggesting worker wrappers
 - Libraries like `fflate` handle their own worker management
 
+### Web Worker + Comlink Pattern
+For custom workers, use Comlink for type-safe RPC-style communication:
+
+**Worker side** ([example](src/shared/services/image/compression.worker.ts)):
+```ts
+import * as Comlink from "comlink";
+
+const api = { myMethod };
+export type WorkerApi = typeof api;
+Comlink.expose(api);
+```
+
+**Client side** ([example](src/shared/services/image/compression.client.ts)):
+```ts
+import * as Comlink from "comlink";
+
+const worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
+const api = Comlink.wrap<WorkerApi>(worker);
+// Use: await api.myMethod(...args);
+```
+
 ### Service Pattern
 - Services export a clean public API via `index.ts`
 - Implementation details stay in the main file
