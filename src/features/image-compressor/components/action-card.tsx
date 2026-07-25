@@ -2,7 +2,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Loader2, Download } from "lucide-react";
 import { useImageCompressorContext } from "../context";
-import { compressImage } from "../services/image-compressor";
+import { compressImage } from "@/shared/services";
 
 export function ImageCompressorActionCard() {
   const { files, settings, isCompressing, setIsCompressing, setError, updateCompressedSize } =

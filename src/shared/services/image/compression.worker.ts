@@ -1,9 +1,15 @@
-// worker.ts
-import { expose } from "comlink";
-import type { CompressionSettings, CompressResult } from "./types";
+import * as Comlink from "comlink";
 import { encode as encodeJpeg, decode as decodeJpeg } from "@jsquash/jpeg";
 import { encode as encodeWebp, decode as decodeWebp } from "@jsquash/webp";
 import { decode as decodePng } from "@jsquash/png";
+import { CompressionSettings } from "@/features/image-compressor/types";
+
+export interface CompressResult {
+  compressedFile: File;
+  originalSize: number;
+  compressedSize: number;
+  compressionRatio: number;
+}
 
 async function decodeToImageData(file: File): Promise<ImageData> {
   const buffer = await file.arrayBuffer();
@@ -15,6 +21,7 @@ async function decodeToImageData(file: File): Promise<ImageData> {
 
   // Fallback for formats jsquash doesn't decode (e.g. avif, gif, svg):
   // let the browser decode it via canvas, then hand off ImageData.
+  // OffscreenCanvas + createImageBitmap are both available inside workers.
   const bitmap = await createImageBitmap(file);
   const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
   const ctx = canvas.getContext("2d")!;
@@ -59,8 +66,7 @@ async function compressImage(file: File, settings: CompressionSettings): Promise
   };
 }
 
-// Expose the compressImage function to the main thread
-const workerApi = { compressImage };
-export type WorkerApi = typeof workerApi;
+const api = { compressImage };
+export type CompressionWorkerApi = typeof api;
 
-expose(workerApi);
+Comlink.expose(api);
