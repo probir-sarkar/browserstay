@@ -3,6 +3,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/c
 import { Loader2, Download } from "lucide-react";
 import { useImageCompressorContext } from "../context";
 import { compressImage } from "@/shared/services";
+import { createZip } from "@/shared/services/zip";
+import { downloadBlob } from "@/shared/services/download";
 
 export function ImageCompressorActionCard() {
   const { files, settings, isCompressing, setIsCompressing, setError, updateCompressedSize } =
@@ -18,21 +20,27 @@ export function ImageCompressorActionCard() {
     setError(null);
 
     try {
+      // Compress all images first
+      const compressedFiles: Record<string, File> = {};
       for (const imageFile of files) {
         const result = await compressImage(imageFile.file, settings);
         // Update compressed size
         updateCompressedSize(imageFile.id, result.compressedSize);
 
-        // Download the compressed image
-        const url = URL.createObjectURL(result.compressedFile);
-        const link = document.createElement("a");
-        link.href = url;
         const ext = result.compressedFile.type.split("/")[1];
-        link.download = `${imageFile.file.name.split(".")[0]}_compressed.${ext}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        const fileName = `${imageFile.file.name.split(".")[0]}_compressed.${ext}`;
+        compressedFiles[fileName] = result.compressedFile;
+      }
+
+      // Download based on file count
+      if (files.length === 1) {
+        // Single file - download directly
+        const fileName = Object.keys(compressedFiles)[0];
+        downloadBlob(compressedFiles[fileName], fileName);
+      } else {
+        // Multiple files - zip and download
+        const zipBlob = await createZip(compressedFiles);
+        downloadBlob(zipBlob, `compressed_images_${Date.now()}.zip`);
       }
     } catch (err) {
       console.error(err);
