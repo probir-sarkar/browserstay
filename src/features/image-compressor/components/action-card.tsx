@@ -5,6 +5,7 @@ import { useImageCompressorContext } from "../context";
 import { compressImages } from "@/shared/services";
 import { createZip } from "@/shared/services/zip";
 import { downloadBlob } from "@/shared/services/download";
+import { getBaseName } from "@/shared/services/file";
 
 export function ImageCompressorActionCard() {
   const { files, settings, isCompressing, setIsCompressing, setError, updateCompressedSize } =
@@ -38,8 +39,7 @@ export function ImageCompressorActionCard() {
         }
 
         const ext = result.compressedFile.type.split("/")[1];
-        const fileName = `${input.file.name.split(".")[0]}_compressed.${ext}`;
-        const fileName = `${input.file.name.split(".")[0]}_compressed.${ext}`;
+        const fileName = `${getBaseName(input.file)}_compressed.${ext}`;
         compressedFiles[`${input.id}_${fileName}`] = result.compressedFile;
       }
 

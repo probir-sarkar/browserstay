@@ -2,12 +2,9 @@ import { openPdf } from "clawpdf/browser";
 import { createZip } from "../zip";
 import pLimit from "p-limit";
 import { PDFDocument } from "pdf-lib";
+import { getBaseName } from "../file";
 
-function getBaseName(file: File): string {
-  const { name } = file;
-  const dot = name.lastIndexOf(".");
-  return dot > 0 ? name.slice(0, dot) : name || "document";
-}
+
 export interface PdfToImageOptions {
   scale?: number;
   startPage?: number;
