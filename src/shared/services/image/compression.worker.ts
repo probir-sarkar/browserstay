@@ -10,7 +10,6 @@ export interface CompressResult {
   compressedSize: number;
   compressionRatio: number;
 }
-
 async function decodeToImageData(file: File): Promise<ImageData> {
   const buffer = await file.arrayBuffer();
   const type = file.type;
@@ -23,12 +22,15 @@ async function decodeToImageData(file: File): Promise<ImageData> {
   // let the browser decode it via canvas, then hand off ImageData.
   // OffscreenCanvas + createImageBitmap are both available inside workers.
   const bitmap = await createImageBitmap(file);
-  const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-  const ctx = canvas.getContext("2d")!;
-  ctx.drawImage(bitmap, 0, 0);
-  return ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+  try {
+    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+    const ctx = canvas.getContext("2d")!;
+    ctx.drawImage(bitmap, 0, 0);
+    return ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+  } finally {
+    bitmap.close();
+  }
 }
-
 async function compressImage(file: File, settings: CompressionSettings): Promise<CompressResult> {
   if (!file.type.startsWith("image/")) {
     throw new Error("File must be an image");
