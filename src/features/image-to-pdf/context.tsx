@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode, useState, useCallback, useEffect } from "react";
-import { arrayMove, move } from "@dnd-kit/helpers";
+import { arrayMove } from "@dnd-kit/helpers";
 import type { ImageItem, ImageToPdfSettings } from "./types";
 import { DEFAULT_IMAGE_TO_PDF_SETTINGS } from "./constants";
 import { createImageItem } from "./services/image-to-pdf";
