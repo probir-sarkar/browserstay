@@ -2,6 +2,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
 import { Trash2 } from "lucide-react";
+import prettyBytes from "pretty-bytes";
 import { useImageCompressorContext } from "../context";
 
 export function ImageCompressorFileList() {
@@ -29,12 +30,12 @@ export function ImageCompressorFileList() {
                 )}
               </div>
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <span>Original: {(file.originalSize / 1024).toFixed(1)} KB</span>
+                <span>Original: {prettyBytes(file.originalSize)}</span>
                 {file.compressedSize !== undefined && (
                   <>
                     <span>→</span>
                     <span className="text-primary font-medium">
-                      {(file.compressedSize / 1024).toFixed(1)} KB
+                      {prettyBytes(file.compressedSize)}
                     </span>
                   </>
                 )}

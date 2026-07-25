@@ -25,7 +25,7 @@ export function ImageCompressorProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<CompressionSettings>(DEFAULT_COMPRESSION_SETTINGS);
 
   const fileHandler = useFileHandler<ImageFile>({
-    createFile: (file: File) => createImageFile(file),
+    createFile: createImageFile,
     validateFile: (file: File) => file.type.startsWith('image/'),
   });
 

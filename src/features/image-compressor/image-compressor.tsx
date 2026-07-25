@@ -2,7 +2,6 @@ import { ImageCompressorDropZone } from "./components/drop-zone";
 import { ImageCompressorFileList } from "./components/file-list";
 import { ImageCompressorSettings } from "./components/settings";
 import { ImageCompressorActionCard } from "./components/action-card";
-import { ImageCompressorFaq } from "./components/faq";
 
 export function ImageCompressor() {
   return (
@@ -21,5 +20,3 @@ export function ImageCompressor() {
     </div>
   );
 }
-
-export { ImageCompressorFaq };
