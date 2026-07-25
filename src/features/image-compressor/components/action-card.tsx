@@ -37,19 +37,22 @@ export function ImageCompressorActionCard() {
         if (input.id) {
           updateCompressedSize(input.id, result.compressedSize);
         }
-
         const ext = result.compressedFile.type.split("/")[1];
-        const fileName = `${getBaseName(input.file)}_compressed.${ext}`;
+        const baseName = `${getBaseName(input.file)}_compressed`;
+        let fileName = `${baseName}.${ext}`;
+        let counter = 2;
+        while (fileName in compressedFiles) {
+          fileName = `${baseName}_${counter}.${ext}`;
+          counter++;
+        }
         compressedFiles[`${input.id}_${fileName}`] = result.compressedFile;
       }
 
-      // Download based on file count
+
       if (files.length === 1) {
-        // Single file - download directly
         const [[fileName, file]] = Object.entries(compressedFiles);
         downloadBlob(file, fileName);
       } else {
-        // Multiple files - zip and download
         const zipBlob = await createZip(compressedFiles);
         downloadBlob(zipBlob, `compressed_images_${Date.now()}.zip`);
       }
