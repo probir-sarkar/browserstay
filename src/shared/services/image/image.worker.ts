@@ -17,7 +17,7 @@ const MIME_TYPE: Record<ImageFormat, string> = {
   jpeg: "image/jpeg",
   png: "image/png",
   webp: "image/webp",
-  avif: "image/avif",
+  avif: "image/avif"
 };
 
 /**
@@ -33,11 +33,7 @@ async function decodeToImageData(file: File): Promise<ImageData> {
   if (type === "image/png") return decodePng(buffer);
   if (type === "image/jpeg") return decodeJpeg(buffer);
   if (type === "image/webp") return decodeWebp(buffer);
-  if (type === "image/avif") {
-    const avifData = await decodeAvif(buffer);
-    if (!avifData) throw new Error("Failed to decode AVIF image");
-    return avifData;
-  }
+  if (type === "image/avif") await decodeAvif(buffer);
 
   const bitmap = await createImageBitmap(file);
   try {
@@ -51,23 +47,16 @@ async function decodeToImageData(file: File): Promise<ImageData> {
   }
 }
 
-/** UI quality (1–100) → jSquash quality (0–1) for lossy formats. */
-function normalizeQuality(quality: number): number {
-  return Math.min(1, Math.max(0, quality / 100));
-}
-
-async function encodeImageData(
-  imageData: ImageData,
-  options: EncodeImageOptions
-): Promise<ArrayBuffer> {
-  const { outputFormat } = options;
+async function encodeImageData(imageData: ImageData, options: EncodeImageOptions): Promise<ArrayBuffer> {
+  const { outputFormat, quality } = options;
+  if (quality < 1 || quality > 100) throw new Error("Quality must be between 1 and 100");
   switch (outputFormat) {
     case "jpeg":
-      return encodeJpeg(imageData, { quality: normalizeQuality(options.quality) });
+      return encodeJpeg(imageData, { quality: options.quality });
     case "webp":
-      return encodeWebp(imageData, { quality: normalizeQuality(options.quality) });
+      return encodeWebp(imageData, { quality: options.quality });
     case "avif":
-      return encodeAvif(imageData, { quality: normalizeQuality(options.quality) });
+      return encodeAvif(imageData, { quality: options.quality });
     case "png":
       // PNG is lossless; quality is intentionally ignored.
       return encodePng(imageData);
@@ -76,10 +65,7 @@ async function encodeImageData(
   }
 }
 
-async function encodeImageWorker(
-  file: File,
-  options: EncodeImageOptions
-): Promise<EncodeImageResult> {
+async function encodeImageWorker(file: File, options: EncodeImageOptions): Promise<EncodeImageResult> {
   if (!file.type.startsWith("image/")) {
     throw new Error("File must be an image");
   }
@@ -87,14 +73,14 @@ async function encodeImageWorker(
   const imageData = await decodeToImageData(file);
   const encoded = await encodeImageData(imageData, options);
   const outputFile = new File([encoded], file.name, {
-    type: MIME_TYPE[options.outputFormat],
+    type: MIME_TYPE[options.outputFormat]
   });
 
   return {
     outputFile,
     originalSize: file.size,
     outputSize: outputFile.size,
-    ratio: ((file.size - outputFile.size) / file.size) * 100,
+    ratio: ((file.size - outputFile.size) / file.size) * 100
   };
 }
 
