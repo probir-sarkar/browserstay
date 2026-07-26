@@ -1,4 +1,4 @@
-import { useState, useCallback, type SetStateAction } from "react";
+import { useState, useCallback, useEffect, useRef, type SetStateAction } from "react";
 
 export interface BaseFile {
   id: string;
@@ -17,6 +17,18 @@ export function useFileHandler<T extends BaseFile = BaseFile>(
 ) {
   const [files, setFiles] = useState<T[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const filesRef = useRef<T[]>(files);
+  filesRef.current = files;
+
+  useEffect(() => {
+    return () => {
+      filesRef.current.forEach((f) => {
+        if ('preview' in f && typeof f.preview === 'string') {
+          URL.revokeObjectURL(f.preview as string);
+        }
+      });
+    };
+  }, []);
 
   const { validateFile, createFile, onAdd, onRemove } = options;
 
