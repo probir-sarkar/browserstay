@@ -6,6 +6,14 @@ import { calculateTargetDimensions } from "../services/image-resize";
 import { resizeImages } from "@/shared/services";
 import { downloadBlob } from "@/shared/services/download";
 import { getBaseName } from "@/shared/services/file";
+import type { ImageFormat } from "@/shared/services/image/types";
+
+const SUPPORTED_FORMATS: readonly string[] = ["jpeg", "png", "webp", "avif"];
+
+function resolveOutputFormat(settingsFormat: string, mimeSubtype: string): ImageFormat {
+  if (settingsFormat !== "original") return settingsFormat as ImageFormat;
+  return SUPPORTED_FORMATS.includes(mimeSubtype) ? (mimeSubtype as ImageFormat) : "png";
+}
 
 export function ImageResizeActionCard() {
   const { files, settings, isResizing, setIsResizing, setError } = useImageResizeContext();
@@ -27,9 +35,7 @@ export function ImageResizeActionCard() {
           settings
         );
 
-        const outputFormat = settings.outputFormat === 'original'
-          ? (imageFile.file.type.split('/')[1] as any)
-          : settings.outputFormat;
+        const outputFormat = resolveOutputFormat(settings.outputFormat, imageFile.file.type.split('/')[1]);
 
         return {
           file: imageFile.file,

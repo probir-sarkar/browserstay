@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, type SetStateAction } from "react";
 
 export interface BaseFile {
   id: string;
@@ -73,7 +73,7 @@ export function useFileHandler<T extends BaseFile = BaseFile>(
     setFiles([]);
   }, [files]);
 
-  const setFilesHandler = useCallback((newFiles: T[]) => {
+  const setFilesHandler = useCallback((newFiles: SetStateAction<T[]>) => {
     setFiles(newFiles);
   }, []);
 

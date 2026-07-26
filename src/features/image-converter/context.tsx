@@ -31,16 +31,17 @@ export function ImageConverterProvider({ children }: { children: ReactNode }) {
   const processingState = useProcessingState();
 
   const updateConvertedSize = useCallback((id: string, size: number) => {
-    const updatedFiles = fileHandler.files.map((f) =>
-      f.id === id
-        ? {
-            ...f,
-            convertedSize: size,
-            conversionRatio: ((f.originalSize - size) / f.originalSize) * 100,
-          }
-        : f
+    fileHandler.setFiles((prevFiles) =>
+      prevFiles.map((f) =>
+        f.id === id
+          ? {
+              ...f,
+              convertedSize: size,
+              conversionRatio: ((f.originalSize - size) / f.originalSize) * 100,
+            }
+          : f
+      )
     );
-    fileHandler.setFiles(updatedFiles);
   }, [fileHandler]);
 
   const updateSettings = useCallback((newSettings: Partial<ConversionSettings>) => {
