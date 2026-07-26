@@ -1,0 +1,6 @@
+- Values clean code: prefers removing dead/unused code, inaccurate comments, and unnecessary complexity in a single pass. Confidence: 0.9
+- Prefers fixing bugs (especially logic bugs like missing `return` statements) at the same time as doing related refactoring work. Confidence: 0.8
+- Prefers centralized, worker-offloaded processing over main-thread implementations — moves resize into the shared Web Worker to avoid blocking the UI thread. Confidence: 0.8
+- Prefers consistent UX across similar features (e.g., single-file download vs. auto-zip for multiple files should match the compressor pattern). Confidence: 0.7
+- Wants type-null-safety properly handled (e.g., checking `null` return from `decodeAvif` instead of passing through unchecked). Confidence: 0.7
+- Prefers removing or fixing inaccurate documentation/comments rather than leaving misleading ones. Confidence: 0.7

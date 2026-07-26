@@ -1,13 +1,14 @@
-import { useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Loader2, Download } from "lucide-react";
 import { useImageResizeContext } from "../context";
-import { resizeImage, calculateTargetDimensions, downloadResult } from "../services/image-resize";
+import { calculateTargetDimensions } from "../services/image-resize";
+import { resizeImages } from "@/shared/services";
+import { downloadBlob } from "@/shared/services/download";
+import { getBaseName } from "@/shared/services/file";
 
 export function ImageResizeActionCard() {
   const { files, settings, isResizing, setIsResizing, setError } = useImageResizeContext();
-  const [success, setSuccess] = useState(false);
 
   const handleResize = async () => {
     if (files.length === 0) {
@@ -17,33 +18,55 @@ export function ImageResizeActionCard() {
 
     setIsResizing(true);
     setError(null);
-    setSuccess(false);
 
     try {
-      for (const imageFile of files) {
+      const inputs = files.map((imageFile) => {
         const dimensions = calculateTargetDimensions(
           imageFile.originalWidth,
           imageFile.originalHeight,
           settings
         );
 
-        let outputType = imageFile.file.type;
-        if (settings.outputFormat !== 'original') {
-          outputType = `image/${settings.outputFormat}`;
+        const outputFormat = settings.outputFormat === 'original'
+          ? (imageFile.file.type.split('/')[1] as any)
+          : settings.outputFormat;
+
+        return {
+          file: imageFile.file,
+          id: imageFile.id,
+          options: {
+            targetWidth: dimensions.width,
+            targetHeight: dimensions.height,
+            quality: settings.quality,
+            outputFormat,
+          },
+        };
+      });
+
+      const results = await resizeImages(inputs);
+
+      if (results.length === 1) {
+        const { outputFile } = results[0].result;
+        const ext = outputFile.type.split("/")[1];
+        const fileName = `${getBaseName(results[0].input.file)}_resized.${ext}`;
+        downloadBlob(outputFile, fileName);
+      } else {
+        const { createZip } = await import("@/shared/services/zip");
+        const filesMap: Record<string, File> = {};
+        for (const { input, result } of results) {
+          const ext = result.outputFile.type.split("/")[1];
+          const baseName = `${getBaseName(input.file)}_resized`;
+          let fileName = `${baseName}.${ext}`;
+          let counter = 2;
+          while (fileName in filesMap) {
+            fileName = `${baseName}_${counter}.${ext}`;
+            counter++;
+          }
+          filesMap[fileName] = result.outputFile;
         }
-
-        const result = await resizeImage(imageFile, {
-          targetWidth: dimensions.width,
-          targetHeight: dimensions.height,
-          maintainAspectRatio: settings.maintainAspectRatio,
-          quality: settings.quality,
-          outputFormat: outputType,
-        });
-
-        downloadResult(result);
+        const zipBlob = await createZip(filesMap);
+        downloadBlob(zipBlob, `resized_images_${Date.now()}.zip`);
       }
-
-      setSuccess(true);
     } catch (err) {
       console.error(err);
       setError("An error occurred while resizing images. Please try again.");

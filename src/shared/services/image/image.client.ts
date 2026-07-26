@@ -1,6 +1,6 @@
 import * as Comlink from "comlink";
 import type { ImageWorkerApi } from "./image.worker";
-import type { EncodeImageOptions } from "./types";
+import type { EncodeImageOptions, ResizeWorkerOptions } from "./types";
 import pLimit from "p-limit";
 
 let worker: Worker | undefined;
@@ -43,6 +43,35 @@ export async function encodeImages(
   const tasks = inputs.map((input) =>
     limit(async () => {
       const result = await getApi().encodeImageWorker(input.file, input.options);
+      completed++;
+      onProgress?.(completed, inputs.length);
+      return { input, result };
+    })
+  );
+
+  return Promise.all(tasks);
+}
+
+export interface ResizeImageInput {
+  file: File;
+  options: ResizeWorkerOptions;
+  id?: string;
+}
+
+export type ResizeImageSuccess = EncodeImageSuccess;
+
+export async function resizeImages(
+  inputs: ResizeImageInput[],
+  onProgress?: (completed: number, total: number) => void
+): Promise<ResizeImageSuccess[]> {
+  if (inputs.length === 0) return [];
+
+  const limit = pLimit(4);
+  let completed = 0;
+
+  const tasks = inputs.map((input) =>
+    limit(async () => {
+      const result = await getApi().resizeImageWorker(input.file, input.options);
       completed++;
       onProgress?.(completed, inputs.length);
       return { input, result };
