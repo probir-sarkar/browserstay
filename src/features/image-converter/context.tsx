@@ -25,33 +25,36 @@ export function ImageConverterProvider({ children }: { children: ReactNode }) {
 
   const fileHandler = useFileHandler<ConverterFile>({
     createFile: createConverterFile,
-    validateFile: (file: File) => file.type.startsWith("image/"),
+    validateFile: (file: File) => file.type.startsWith("image/")
   });
 
   const processingState = useProcessingState();
 
-  const updateConvertedSize = useCallback((id: string, size: number) => {
+  const updateConvertedSize = (id: string, size: number) => {
     fileHandler.setFiles((prevFiles) =>
       prevFiles.map((f) =>
         f.id === id
           ? {
               ...f,
               convertedSize: size,
-              conversionRatio: ((f.originalSize - size) / f.originalSize) * 100,
+              conversionRatio: ((f.originalSize - size) / f.originalSize) * 100
             }
           : f
       )
     );
-  }, [fileHandler]);
+  };
 
   const updateSettings = useCallback((newSettings: Partial<ConversionSettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   }, []);
 
-  const setError = useCallback((error: string | null) => {
-    fileHandler.setError(error);
-    processingState.setError(error);
-  }, [fileHandler, processingState]);
+  const setError = useCallback(
+    (error: string | null) => {
+      fileHandler.setError(error);
+      processingState.setError(error);
+    },
+    [fileHandler, processingState]
+  );
 
   const value: ImageConverterContextValue = {
     files: fileHandler.files,
@@ -64,14 +67,10 @@ export function ImageConverterProvider({ children }: { children: ReactNode }) {
     updateSettings,
     setIsConverting: processingState.setIsProcessing,
     setError,
-    updateConvertedSize,
+    updateConvertedSize
   };
 
-  return (
-    <ImageConverterContext.Provider value={value}>
-      {children}
-    </ImageConverterContext.Provider>
-  );
+  return <ImageConverterContext.Provider value={value}>{children}</ImageConverterContext.Provider>;
 }
 
 export function useImageConverterContext(): ImageConverterContextValue {
