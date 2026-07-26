@@ -24,7 +24,11 @@ export function ImageCompressorActionCard() {
       // Compress all images with controlled concurrency
       const inputs = files.map((imageFile) => ({
         file: imageFile.file,
-        settings,
+        options: {
+          outputFormat: settings.outputFormat,
+          quality: settings.quality,
+          maxDimension: settings.maxDimension > 0 ? settings.maxDimension : undefined,
+        },
         id: imageFile.id
       }));
 
@@ -35,9 +39,9 @@ export function ImageCompressorActionCard() {
       for (const { input, result } of results) {
         // Update compressed size for each file
         if (input.id) {
-          updateCompressedSize(input.id, result.compressedSize);
+          updateCompressedSize(input.id, result.outputSize);
         }
-        const ext = result.compressedFile.type.split("/")[1];
+        const ext = result.outputFile.type.split("/")[1];
         const baseName = `${getBaseName(input.file)}_compressed`;
         let fileName = `${baseName}.${ext}`;
         let counter = 2;
@@ -45,7 +49,7 @@ export function ImageCompressorActionCard() {
           fileName = `${baseName}_${counter}.${ext}`;
           counter++;
         }
-        compressedFiles[fileName] = result.compressedFile;
+        compressedFiles[fileName] = result.outputFile;
       }
 
 
@@ -74,6 +78,9 @@ export function ImageCompressorActionCard() {
           Compress {files.length} image{files.length !== 1 ? "s" : ""} to reduce file size while maintaining quality.
         </p>
         {files.length > 0 && <div className="text-xs text-muted-foreground">Target quality: {settings.quality}%</div>}
+        {files.length > 0 && settings.maxDimension > 0 && (
+          <div className="text-xs text-muted-foreground">Max dimension: {settings.maxDimension}px</div>
+        )}
       </CardContent>
       <CardFooter>
         <Button className="w-full" size="lg" onClick={handleCompress} disabled={files.length === 0 || isCompressing}>

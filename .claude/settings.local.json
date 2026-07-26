@@ -18,7 +18,9 @@
       "Bash(pnpm run *)",
       "Bash(npx tsc *)",
       "Bash(bun add *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(bun remove *)",
+      "Bash(bunx tsc *)"
     ]
   }
 }
