@@ -1,6 +1,10 @@
 - Values clean code: prefers removing dead/unused code, inaccurate comments, and unnecessary complexity in a single pass. Confidence: 0.9
+- Prevents code duplication — notices when separate modules share nearly identical scaffolding and questions whether they should be consolidated. Confidence: 0.7
 - Prefers fixing bugs (especially logic bugs like missing `return` statements) at the same time as doing related refactoring work. Confidence: 0.8
 - Prefers centralized, worker-offloaded processing over main-thread implementations — moves resize into the shared Web Worker to avoid blocking the UI thread. Confidence: 0.8
 - Prefers consistent UX across similar features (e.g., single-file download vs. auto-zip for multiple files should match the compressor pattern). Confidence: 0.7
 - Wants type-null-safety properly handled (e.g., checking `null` return from `decodeAvif` instead of passing through unchecked). Confidence: 0.7
 - Prefers removing or fixing inaccurate documentation/comments rather than leaving misleading ones. Confidence: 0.7
+- Values clear feature differentiation — features should have distinct, meaningful identities and real technical differences (e.g., actual compression techniques vs. just different quality defaults), not just cosmetic differences like naming or default settings. Confidence: 0.7
+- Prefers using Bun as the project runtime/toolchain over npm or other Node.js runtimes. Confidence: 0.9
+- Values keeping dependencies up to date — proactively requests updating libraries (e.g., @base-ui/react, shadcn) to their latest versions rather than staying on older releases. Confidence: 0.8

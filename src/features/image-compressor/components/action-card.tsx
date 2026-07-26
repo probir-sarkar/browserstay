@@ -2,7 +2,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Loader2, Download } from "lucide-react";
 import { useImageCompressorContext } from "../context";
-import { encodeImages } from "@/shared/services";
+import { compressImages } from "@/shared/services";
 import { createZip } from "@/shared/services/zip";
 import { downloadBlob } from "@/shared/services/download";
 import { getBaseName } from "@/shared/services/file";
@@ -24,11 +24,15 @@ export function ImageCompressorActionCard() {
       // Compress all images with controlled concurrency
       const inputs = files.map((imageFile) => ({
         file: imageFile.file,
-        options: settings,
+        options: {
+          outputFormat: settings.outputFormat,
+          quality: settings.quality,
+          maxDimension: settings.maxDimension > 0 ? settings.maxDimension : undefined,
+        },
         id: imageFile.id
       }));
 
-      const results = await encodeImages(inputs);
+      const results = await compressImages(inputs);
 
       // Build compressed files map
       const compressedFiles: Record<string, File> = {};
@@ -74,6 +78,9 @@ export function ImageCompressorActionCard() {
           Compress {files.length} image{files.length !== 1 ? "s" : ""} to reduce file size while maintaining quality.
         </p>
         {files.length > 0 && <div className="text-xs text-muted-foreground">Target quality: {settings.quality}%</div>}
+        {files.length > 0 && settings.maxDimension > 0 && (
+          <div className="text-xs text-muted-foreground">Max dimension: {settings.maxDimension}px</div>
+        )}
       </CardContent>
       <CardFooter>
         <Button className="w-full" size="lg" onClick={handleCompress} disabled={files.length === 0 || isCompressing}>

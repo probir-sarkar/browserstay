@@ -3,7 +3,13 @@ import { encode as encodeJpeg, decode as decodeJpeg } from "@jsquash/jpeg";
 import { encode as encodeWebp, decode as decodeWebp } from "@jsquash/webp";
 import { encode as encodePng, decode as decodePng } from "@jsquash/png";
 import { encode as encodeAvif, decode as decodeAvif } from "@jsquash/avif";
-import type { EncodeImageOptions, ResizeWorkerOptions, ImageFormat } from "./types";
+import type {
+  EncodeImageOptions,
+  ResizeWorkerOptions,
+  CompressImageOptions,
+  ImageFormat,
+  ImageTransparencyInfo,
+} from "./types";
 
 export interface EncodeImageResult {
   outputFile: File;
@@ -108,7 +114,64 @@ async function resizeImageWorker(file: File, options: ResizeWorkerOptions): Prom
   };
 }
 
-const api = { encodeImageWorker, resizeImageWorker };
+async function compressImageWorker(file: File, options: CompressImageOptions): Promise<EncodeImageResult> {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("File must be an image");
+  }
+
+  const imageData = await decodeToImageData(file);
+  let { width, height } = imageData;
+  let data = imageData;
+
+  // Auto-resize: scale down to fit within maxDimension while preserving aspect ratio
+  if (options.maxDimension && options.maxDimension > 0) {
+    const max = options.maxDimension;
+    if (width > max || height > max) {
+      const ratio = Math.min(max / width, max / height);
+      width = Math.round(width * ratio);
+      height = Math.round(height * ratio);
+
+      const canvas = new OffscreenCanvas(width, height);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Canvas 2D context not supported");
+
+      const bitmap = await createImageBitmap(data);
+      ctx.drawImage(bitmap, 0, 0, width, height);
+      bitmap.close();
+      data = ctx.getImageData(0, 0, width, height);
+    }
+  }
+
+  const encoded = await encodeImageData(data, options);
+  const outputFile = new File([encoded], file.name, {
+    type: MIME_TYPE[options.outputFormat],
+  });
+
+  return {
+    outputFile,
+    originalSize: file.size,
+    outputSize: outputFile.size,
+    ratio: ((file.size - outputFile.size) / file.size) * 100,
+  };
+}
+
+async function checkImageTransparencyWorker(file: File): Promise<ImageTransparencyInfo> {
+  const imageData = await decodeToImageData(file);
+  const pixels = imageData.data;
+  let alphaCount = 0;
+  // Sample every Nth pixel for performance on large images
+  const step = Math.max(1, Math.floor(pixels.length / 10000));
+  for (let i = 3; i < pixels.length; i += 4 * step) {
+    if (pixels[i] < 255) alphaCount++;
+  }
+  const sampleCount = Math.ceil(pixels.length / 4 / step);
+  return {
+    hasAlpha: alphaCount > 0,
+    alphaPixelPercent: sampleCount > 0 ? (alphaCount / sampleCount) * 100 : 0,
+  };
+}
+
+const api = { encodeImageWorker, resizeImageWorker, compressImageWorker, checkImageTransparencyWorker };
 export type ImageWorkerApi = typeof api;
 
 Comlink.expose(api);

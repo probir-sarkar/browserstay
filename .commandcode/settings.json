@@ -3,7 +3,9 @@
     "allow": [
       "Shell(npx tsc --noEmit 2>&1)",
       "Shell(bun:*)",
-      "Shell(npx -p typescript tsc --noEmit 2 >& 1)"
+      "Shell(npx -p typescript tsc --noEmit 2 >& 1)",
+      "Shell(npx tsc --noEmit 2 >& 1)",
+      "Shell(npm:*)"
     ],
     "deny": [],
     "defaultMode": "default"

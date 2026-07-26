@@ -3,7 +3,7 @@ import { Label } from "@/shared/components/ui/label";
 import { Slider } from "@/shared/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { useImageCompressorContext } from "../context";
-import { OUTPUT_FORMATS } from "../constants";
+import { OUTPUT_FORMATS, DIMENSION_PRESETS } from "../constants";
 
 export function ImageCompressorSettings() {
   const { settings, updateSettings } = useImageCompressorContext();
@@ -31,6 +31,7 @@ export function ImageCompressorSettings() {
           <Label htmlFor="format">Output Format</Label>
           <Select
             value={settings.outputFormat}
+            items={OUTPUT_FORMATS}
             onValueChange={(value) => updateSettings({ outputFormat: value as "jpeg" | "webp" })}
           >
             <SelectTrigger className="w-full" id="format">
@@ -44,6 +45,31 @@ export function ImageCompressorSettings() {
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="dimension">Max Dimension</Label>
+          <Select
+            value={settings.maxDimension}
+            items={DIMENSION_PRESETS}
+            onValueChange={(value) => value && updateSettings({ maxDimension: value })}
+          >
+            <SelectTrigger className="w-full" id="dimension">
+              <SelectValue placeholder="Select a max dimension" />
+            </SelectTrigger>
+            <SelectContent>
+              {DIMENSION_PRESETS.map((preset) => (
+                <SelectItem key={preset.value} value={preset.value}>
+                  {preset.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            {settings.maxDimension === 0
+              ? "Keep original dimensions"
+              : `Images larger than ${settings.maxDimension}px on the longest side will be scaled down`}
+          </p>
         </div>
       </CardContent>
     </Card>

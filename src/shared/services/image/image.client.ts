@@ -1,6 +1,6 @@
 import * as Comlink from "comlink";
 import type { ImageWorkerApi } from "./image.worker";
-import type { EncodeImageOptions, ResizeWorkerOptions } from "./types";
+import type { EncodeImageOptions, ResizeWorkerOptions, CompressImageOptions, ImageTransparencyInfo } from "./types";
 import pLimit from "p-limit";
 
 let worker: Worker | undefined;
@@ -79,6 +79,42 @@ export async function resizeImages(
   );
 
   return Promise.all(tasks);
+}
+
+export interface CompressImageInput {
+  file: File;
+  options: CompressImageOptions;
+  id?: string;
+}
+
+export interface CompressImageSuccess {
+  input: CompressImageInput;
+  result: Awaited<ReturnType<ImageWorkerApi["compressImageWorker"]>>;
+}
+
+export async function compressImages(
+  inputs: CompressImageInput[],
+  onProgress?: (completed: number, total: number) => void
+): Promise<CompressImageSuccess[]> {
+  if (inputs.length === 0) return [];
+
+  const limit = pLimit(4);
+  let completed = 0;
+
+  const tasks = inputs.map((input) =>
+    limit(async () => {
+      const result = await getApi().compressImageWorker(input.file, input.options);
+      completed++;
+      onProgress?.(completed, inputs.length);
+      return { input, result };
+    })
+  );
+
+  return Promise.all(tasks);
+}
+
+export async function checkImageTransparency(file: File): Promise<ImageTransparencyInfo> {
+  return getApi().checkImageTransparencyWorker(file);
 }
 
 export function terminateImageWorker(): void {

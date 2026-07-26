@@ -10,4 +10,11 @@ export interface ImageFile {
 export interface CompressionSettings {
   quality: number;
   outputFormat: "jpeg" | "webp";
+  /** Max dimension preset (0 = original). Applied as maxDimension in the worker. */
+  maxDimension: number;
+}
+
+export interface DimensionPreset {
+  label: string;
+  value: number;
 }
