@@ -1,2 +1,2 @@
-export * from "./converter";
-export * from "./compression.client";
+export * from "./types";
+export * from "./image.client";

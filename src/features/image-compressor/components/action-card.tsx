@@ -2,7 +2,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Loader2, Download } from "lucide-react";
 import { useImageCompressorContext } from "../context";
-import { compressImages } from "@/shared/services";
+import { encodeImages } from "@/shared/services";
 import { createZip } from "@/shared/services/zip";
 import { downloadBlob } from "@/shared/services/download";
 import { getBaseName } from "@/shared/services/file";
@@ -24,20 +24,20 @@ export function ImageCompressorActionCard() {
       // Compress all images with controlled concurrency
       const inputs = files.map((imageFile) => ({
         file: imageFile.file,
-        settings,
+        options: settings,
         id: imageFile.id
       }));
 
-      const results = await compressImages(inputs);
+      const results = await encodeImages(inputs);
 
       // Build compressed files map
       const compressedFiles: Record<string, File> = {};
       for (const { input, result } of results) {
         // Update compressed size for each file
         if (input.id) {
-          updateCompressedSize(input.id, result.compressedSize);
+          updateCompressedSize(input.id, result.outputSize);
         }
-        const ext = result.compressedFile.type.split("/")[1];
+        const ext = result.outputFile.type.split("/")[1];
         const baseName = `${getBaseName(input.file)}_compressed`;
         let fileName = `${baseName}.${ext}`;
         let counter = 2;
@@ -45,7 +45,7 @@ export function ImageCompressorActionCard() {
           fileName = `${baseName}_${counter}.${ext}`;
           counter++;
         }
-        compressedFiles[fileName] = result.compressedFile;
+        compressedFiles[fileName] = result.outputFile;
       }
 
 

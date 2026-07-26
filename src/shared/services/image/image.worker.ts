@@ -1,0 +1,104 @@
+import * as Comlink from "comlink";
+import { encode as encodeJpeg, decode as decodeJpeg } from "@jsquash/jpeg";
+import { encode as encodeWebp, decode as decodeWebp } from "@jsquash/webp";
+import { encode as encodePng, decode as decodePng } from "@jsquash/png";
+import { encode as encodeAvif, decode as decodeAvif } from "@jsquash/avif";
+import type { EncodeImageOptions, ImageFormat } from "./types";
+
+export interface EncodeImageResult {
+  outputFile: File;
+  originalSize: number;
+  outputSize: number;
+  /** (original - output) / original * 100. Negative when the output grew. */
+  ratio: number;
+}
+
+const MIME_TYPE: Record<ImageFormat, string> = {
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  avif: "image/avif",
+};
+
+/**
+ * Decodes any supported image into raw ImageData.
+ * jSquash decodes png/jpeg/webp/avif; anything else (gif, svg, bmp, …) falls
+ * back to the browser via createImageBitmap + OffscreenCanvas, both of which
+ * are available inside workers.
+ */
+async function decodeToImageData(file: File): Promise<ImageData> {
+  const buffer = await file.arrayBuffer();
+  const type = file.type;
+
+  if (type === "image/png") return decodePng(buffer);
+  if (type === "image/jpeg") return decodeJpeg(buffer);
+  if (type === "image/webp") return decodeWebp(buffer);
+  if (type === "image/avif") {
+    const avifData = await decodeAvif(buffer);
+    if (!avifData) throw new Error("Failed to decode AVIF image");
+    return avifData;
+  }
+
+  const bitmap = await createImageBitmap(file);
+  try {
+    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas 2D context not supported");
+    ctx.drawImage(bitmap, 0, 0);
+    return ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+  } finally {
+    bitmap.close();
+  }
+}
+
+/** UI quality (1–100) → jSquash quality (0–1) for lossy formats. */
+function normalizeQuality(quality: number): number {
+  return Math.min(1, Math.max(0, quality / 100));
+}
+
+async function encodeImageData(
+  imageData: ImageData,
+  options: EncodeImageOptions
+): Promise<ArrayBuffer> {
+  const { outputFormat } = options;
+  switch (outputFormat) {
+    case "jpeg":
+      return encodeJpeg(imageData, { quality: normalizeQuality(options.quality) });
+    case "webp":
+      return encodeWebp(imageData, { quality: normalizeQuality(options.quality) });
+    case "avif":
+      return encodeAvif(imageData, { quality: normalizeQuality(options.quality) });
+    case "png":
+      // PNG is lossless; quality is intentionally ignored.
+      return encodePng(imageData);
+    default:
+      throw new Error(`Unsupported output format: ${outputFormat as string}`);
+  }
+}
+
+async function encodeImageWorker(
+  file: File,
+  options: EncodeImageOptions
+): Promise<EncodeImageResult> {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("File must be an image");
+  }
+
+  const imageData = await decodeToImageData(file);
+  const encoded = await encodeImageData(imageData, options);
+  const outputFile = new File([encoded], file.name, {
+    type: MIME_TYPE[options.outputFormat],
+  });
+
+  return {
+    outputFile,
+    originalSize: file.size,
+    outputSize: outputFile.size,
+    ratio: ((file.size - outputFile.size) / file.size) * 100,
+  };
+}
+
+const api = { encodeImageWorker };
+export type ImageWorkerApi = typeof api;
+
+Comlink.expose(api);

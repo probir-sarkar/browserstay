@@ -1,104 +1,57 @@
-
-import { Card } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
+import { Card } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
-import { X, Download, ArrowDown, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import prettyBytes from "pretty-bytes";
 import { useImageConverterContext } from "../context";
-import { FileThumbnail } from "../services/utils/file-thumbnail";
-import { downloadFile } from "../services/utils/image-converter";
 
-export function FileList() {
-  const { files, removeFile, clearFiles, isProcessing } = useImageConverterContext();
+export function ImageConverterFileList() {
+  const { files, removeFile } = useImageConverterContext();
 
-  if (files.length === 0) {
-    return null;
-  }
+  if (files.length === 0) return null;
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between px-1">
-        <h3 className="text-sm font-semibold text-muted-foreground">
-          {files.length} {files.length === 1 ? "file" : "files"}
-        </h3>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={clearFiles}
-          disabled={isProcessing}
-          className="text-muted-foreground hover:text-foreground h-8"
-        >
-          <Trash2 className="h-4 w-4 mr-1" />
-          Clear All
-        </Button>
-      </div>
-      {files.map((file) => (
-        <Card key={file.id} size="sm">
-          <div className="flex items-center gap-3 p-3">
-            <FileThumbnail file={file} />
+      {files.map((file) => {
+        const ratio = file.conversionRatio;
+        const smaller = typeof ratio === "number" && ratio > 0;
 
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">{file.file.name}</p>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant="secondary" className="text-xs">
-                  {prettyBytes(file.file.size)}
-                </Badge>
-                {file.status === "completed" && file.result && (
-                  <>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <ArrowDown className="h-3 w-3 text-green-600" />
-                      <span>{prettyBytes(file.result.compressedSize)}</span>
-                    </div>
-                    <Badge variant="default" className="text-xs bg-green-500 hover:bg-green-600">
-                      {file.result.savingsPercent}
-                    </Badge>
-                  </>
-                )}
-                {file.status === "completed" && !file.result && (
-                  <Badge variant="default" className="text-xs bg-green-500 hover:bg-green-600">
-                    Converted
-                  </Badge>
-                )}
-                {file.status === "processing" && (
-                  <Badge variant="outline" className="text-xs">
-                    Processing...
-                  </Badge>
-                )}
-                {file.status === "error" && (
-                  <Badge variant="destructive" className="text-xs">
-                    Error
-                  </Badge>
-                )}
-              </div>
-            </div>
-
-            {file.status === "completed" && file.result && (
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => downloadFile(file.result!.compressedFile, file.file.name)}
-                className="shrink-0"
-                title="Download converted file"
-              >
-                <Download className="h-4 w-4" />
-              </Button>
-            )}
-            <Button variant="ghost" size="icon-sm" onClick={() => removeFile(file.id)} className="shrink-0">
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {file.status === "processing" && file.progress !== undefined && (
-            <div className="px-3 pb-3">
-              <progress
-                value={file.progress}
-                max="100"
-                className="w-full h-1 appearance-none bg-muted rounded-full overflow-hidden [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-blue-500 [&::-moz-progress-bar]:bg-blue-500"
+        return (
+          <Card key={file.id} className="p-4">
+            <div className="flex items-center gap-4">
+              <img
+                src={file.preview}
+                alt={file.file.name}
+                className="w-16 h-16 object-cover rounded-md"
               />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="font-medium text-foreground truncate">{file.file.name}</p>
+                  {typeof ratio === "number" && ratio !== 0 && (
+                    <Badge variant={smaller ? "secondary" : "outline"} className="text-xs">
+                      {smaller ? `-${ratio.toFixed(1)}%` : `+${Math.abs(ratio).toFixed(1)}%`}
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <span>{prettyBytes(file.originalSize)}</span>
+                  {file.convertedSize !== undefined && (
+                    <>
+                      <span>→</span>
+                      <span className="text-primary font-medium">
+                        {prettyBytes(file.convertedSize)}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => removeFile(file.id)}>
+                <Trash2 className="w-4 h-4" />
+              </Button>
             </div>
-          )}
-        </Card>
-      ))}
+          </Card>
+        );
+      })}
     </div>
   );
 }

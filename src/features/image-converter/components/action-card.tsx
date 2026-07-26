@@ -1,109 +1,109 @@
-
-import { ActionCard as ReusableActionCard } from "@/shared/components/layout/action-card";
-import { Sparkles } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { Loader2, Download } from "lucide-react";
 import { useImageConverterContext } from "../context";
-import { convertImages, type ConversionOptions, createZipArchive } from "../services/utils/image-converter";
-import { useState } from "react";
+import { encodeImages } from "@/shared/services";
+import type { ImageFormat } from "@/shared/services";
+import { createZip } from "@/shared/services/zip";
+import { downloadBlob } from "@/shared/services/download";
+import { getBaseName } from "@/shared/services/file";
 
-export function ActionCard() {
-    const { files, isProcessing, setIsProcessing, updateFileStatus, updateFileResult, settings } = useImageConverterContext();
+const FORMAT_EXTENSION: Record<ImageFormat, string> = {
+  jpeg: "jpg",
+  png: "png",
+  webp: "webp",
+  avif: "avif",
+};
 
-    const [overallProgress, setOverallProgress] = useState(0);
-    const [isDownloadingZip, setIsDownloadingZip] = useState(false);
+export function ImageConverterActionCard() {
+  const { files, settings, isConverting, setIsConverting, setError, updateConvertedSize } =
+    useImageConverterContext();
 
-    const handleConvert = async () => {
-        if (files.length === 0) return;
+  const handleConvert = async () => {
+    if (files.length === 0) {
+      setError("Please select at least one image to convert.");
+      return;
+    }
 
-        setIsProcessing(true);
-        setOverallProgress(0);
+    setIsConverting(true);
+    setError(null);
 
-        const options: ConversionOptions = {
-            format: settings.selectedFormat,
-            quality: settings.quality,
-            autoOptimize: settings.autoOptimize,
-            removeMetadata: settings.removeMetadata
-        };
+    try {
+      const inputs = files.map((imageFile) => ({
+        file: imageFile.file,
+        options: settings,
+        id: imageFile.id,
+      }));
 
-        try {
-            const pendingFiles = files.filter(f => f.status !== "completed");
-            const total = pendingFiles.length;
-            let completed = 0;
+      const results = await encodeImages(inputs);
 
-            // Process sequentially to avoid freezing UI too much
-            for (const fileData of pendingFiles) {
-                updateFileStatus(fileData.id, "processing", 0);
-
-                try {
-                    const result = await convertImages([fileData.file], options, (_idx, progress) => {
-                        // Individual file progress could serve interesting UI if we wanted
-                    });
-
-                    if (result[0]) {
-                        updateFileResult(fileData.id, result[0]);
-                        updateFileStatus(fileData.id, "completed", 100);
-                    }
-                } catch (error) {
-                    console.error(`Error converting ${fileData.file.name}:`, error);
-                    updateFileStatus(fileData.id, "error");
-                }
-
-                completed++;
-                setOverallProgress(Math.round((completed / total) * 100));
-            }
-        } finally {
-            setIsProcessing(false);
+      const convertedFiles: Record<string, File> = {};
+      const ext = FORMAT_EXTENSION[settings.outputFormat];
+      for (const { input, result } of results) {
+        if (input.id) {
+          updateConvertedSize(input.id, result.outputSize);
         }
-    };
-
-    const handleDownloadZip = async () => {
-        const completedFiles = files.filter((f) => f.status === "completed" && f.result);
-        if (completedFiles.length === 0) return;
-
-        setIsDownloadingZip(true);
-        try {
-            await createZipArchive(
-                completedFiles.map((f) => ({
-                    originalFile: f.file,
-                    compressedFile: f.result!.compressedFile,
-                    originalSize: f.result!.originalSize,
-                    compressedSize: f.result!.compressedSize,
-                    savings: f.result!.savings,
-                    savingsPercent: f.result!.savingsPercent
-                }))
-            );
-        } catch (error) {
-            console.error("Error creating ZIP:", error);
-        } finally {
-            setIsDownloadingZip(false);
+        const baseName = `${getBaseName(input.file)}_converted`;
+        let fileName = `${baseName}.${ext}`;
+        let counter = 2;
+        while (fileName in convertedFiles) {
+          fileName = `${baseName}_${counter}.${ext}`;
+          counter++;
         }
-    };
+        convertedFiles[fileName] = result.outputFile;
+      }
 
-    const hasCompleted = files.some(f => f.status === "completed");
-    const hasPending = files.some(f => f.status !== "completed");
+      if (files.length === 1) {
+        const [[fileName, file]] = Object.entries(convertedFiles);
+        downloadBlob(file, fileName);
+      } else {
+        const zipBlob = await createZip(convertedFiles);
+        downloadBlob(zipBlob, `converted_images_${Date.now()}.zip`);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("An error occurred while converting images. Please try again.");
+    } finally {
+      setIsConverting(false);
+    }
+  };
 
-    if (files.length === 0) return null;
-
-    return (
-        <ReusableActionCard
-            isProcessing={isProcessing}
-            progress={overallProgress}
-            onConvert={handleConvert}
-            onDownload={handleDownloadZip}
-            canConvert={!isProcessing && hasPending}
-            canDownload={hasCompleted && !isProcessing}
-            isDownloading={isDownloadingZip}
-            convertLabel="Convert Images"
-            downloadLabel="Download All (ZIP)"
-            statusMessage={
-                hasCompleted && !hasPending
-                    ? "Ready to download"
-                    : "Ready to convert"
-            }
-            className="bg-linear-to-br from-blue-600 to-cyan-700"
-            buttonClassName="text-blue-600 hover:bg-blue-50"
-            progressClassName="bg-blue-800"
-            statusTextClassName="text-blue-100"
-            ConvertIcon={Sparkles}
-        />
-    );
+  return (
+    <Card className="flex flex-col">
+      <CardHeader>
+        <CardTitle>Convert Images</CardTitle>
+      </CardHeader>
+      <CardContent className="flex-1">
+        <p className="text-sm text-muted-foreground mb-4">
+          Convert {files.length} image{files.length !== 1 ? "s" : ""} to{" "}
+          {settings.outputFormat.toUpperCase()} using high-quality WebAssembly encoding.
+        </p>
+        {files.length > 0 && (
+          <div className="text-xs text-muted-foreground">
+            Target quality: {settings.outputFormat === "png" ? "lossless" : `${settings.quality}%`}
+          </div>
+        )}
+      </CardContent>
+      <CardFooter>
+        <Button
+          className="w-full"
+          size="lg"
+          onClick={handleConvert}
+          disabled={files.length === 0 || isConverting}
+        >
+          {isConverting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Converting...
+            </>
+          ) : (
+            <>
+              <Download className="mr-2 h-4 w-4" />
+              Convert & Download
+            </>
+          )}
+        </Button>
+      </CardFooter>
+    </Card>
+  );
 }
