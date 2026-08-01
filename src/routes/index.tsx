@@ -28,7 +28,7 @@ const whyCards = [
     icon: WifiOff,
     title: "Processed on your device",
     description:
-      "Every file is processed locally in your browser — no data is sent anywhere, and once the page loads, your work continues even if your connection drops."
+      "Every file is processed locally in your browser with WebAssembly. Nothing is ever sent to a server — your data never leaves your computer."
   },
   {
     icon: Gift,
