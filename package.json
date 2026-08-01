@@ -55,7 +55,7 @@
     "eslint": "^10",
     "tailwindcss": "^4.2.0",
     "typescript": "^7.0.2",
-    "vite": "^8.0.10",
+    "vite": "^8.2.0",
     "vitest": "^4.1.7",
     "vitest-browser-react": "^2.2.0",
     "wrangler": "^4.110.0"
