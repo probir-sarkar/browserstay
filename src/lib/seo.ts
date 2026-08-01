@@ -14,6 +14,7 @@ export interface MetaConfig {
   ogImage?: string;
   twitterCard?: "summary" | "summary_large_image" | "app" | "player";
   canonicalUrl: string;
+  keywords?: string;
 }
 
 /**
@@ -29,17 +30,20 @@ export function generateMeta(config: MetaConfig) {
     ogDescription = description,
     ogImage = "/og-image.png",
     twitterCard = "summary_large_image",
-    canonicalUrl
+    canonicalUrl,
+    keywords
   } = config;
 
   return {
     meta: [
       { title },
       { name: "description", content: description },
+      ...(keywords ? [{ name: "keywords", content: keywords }] : []),
       { property: "og:title", content: ogTitle },
       { property: "og:description", content: ogDescription },
       { property: "og:image", content: ogImage },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: canonicalUrl },
       { name: "twitter:card", content: twitterCard },
       { name: "twitter:title", content: ogTitle },
       { name: "twitter:description", content: ogDescription },
@@ -66,43 +70,68 @@ export function getCanonicalUrl(path: string): string {
  * Predefined SEO configurations for all main routes
  * Add new routes here to maintain centralized SEO management
  */
-export const BASE_URL = "https://toolbox.probir.dev";
+export const BASE_URL = "https://browserstay.com";
 
 export const metaConfigs = {
   home: {
-    title: "Toolbox - Free Online Tools for PDF, Images & Password Generation",
-    description: "Free, privacy-focused online tools. Merge, split, and convert PDFs. Convert, resize, and optimize images. Generate secure passwords. 100% offline, no uploads.",
-    canonicalUrl: `${BASE_URL}/`
+    title: "BrowserStay - Free Privacy-First PDF & Image Tools, No Uploads",
+    description: "Free, private PDF and image tools that run entirely in your browser. Your files never leave your PC — no uploads, no accounts, no servers, no limits.",
+    canonicalUrl: `${BASE_URL}/`,
+    keywords: "pdf tools, image tools, merge pdf, compress image, privacy tools, no upload, browser pdf, browserstay"
   },
   pdfToImage: {
-    title: "PDF to Image Converter - Free & Online | Toolbox",
-    description: "Convert PDF pages to high-quality images (JPG, PNG) for free. Works offline, no uploads. Fast, secure, and completely private PDF to image conversion.",
-    canonicalUrl: `${BASE_URL}/pdf-to-image`
+    title: "PDF to Image Converter - Free & Private | BrowserStay",
+    description: "Convert PDF pages to high-quality JPG or PNG images for free. 100% in your browser with WebAssembly — no uploads, works offline, and nothing ever leaves your PC.",
+    canonicalUrl: `${BASE_URL}/pdf-to-image`,
+    keywords: "pdf to image, convert pdf to jpg, pdf to png, pdf converter, offline pdf to image, browserstay"
   },
   mergePdf: {
-    title: "Merge PDF Files - Free Online PDF Combiner | Toolbox",
-    description: "Combine multiple PDF files into one document for free. Fast, secure, and works offline. No uploads, no registration. Merge PDFs in seconds.",
-    canonicalUrl: `${BASE_URL}/merge-pdf`
+    title: "Merge PDF Files - Free Online PDF Combiner | BrowserStay",
+    description: "Combine multiple PDF files into one document for free. Merge PDFs in seconds — no uploads, no registration, 100% private and processed locally in your browser.",
+    canonicalUrl: `${BASE_URL}/merge-pdf`,
+    keywords: "merge pdf, combine pdf, join pdf, pdf combiner, merge pdf files free, offline merge pdf, browserstay"
   },
   splitPdf: {
-    title: "Split PDF File - Extract Pages Free Online | Toolbox",
-    description: "Split PDF files and extract pages for free. Works offline, no uploads. Separate PDF into individual pages or extract specific pages.",
-    canonicalUrl: `${BASE_URL}/split-pdf`
+    title: "Split PDF File - Extract Pages Free Online | BrowserStay",
+    description: "Split PDF files and extract pages for free. Separate a PDF into individual pages or extract specific ranges — all locally in your browser, no uploads, 100% private.",
+    canonicalUrl: `${BASE_URL}/split-pdf`,
+    keywords: "split pdf, extract pages from pdf, split pdf online, pdf page extractor, offline split pdf, browserstay"
   },
   imageConverter: {
-    title: "Image Converter & Optimizer - Convert & Compress Images Free | Toolbox",
-    description: "Convert, resize, and compress images in bulk. Support for JPG, PNG, WebP, and more. 100% free, private, and works offline.",
-    canonicalUrl: `${BASE_URL}/image-converter`
+    title: "Image Converter - Convert Images Online Free | BrowserStay",
+    description: "Convert images between JPG, PNG, WebP, and AVIF free. High-quality WebAssembly encoding runs entirely in your browser — no uploads, no limits, 100% private.",
+    canonicalUrl: `${BASE_URL}/image-converter`,
+    keywords: "image converter, convert jpg to png, webp to jpg, avif converter, image format converter, offline image converter, browserstay"
   },
   imageToPdf: {
-    title: "Image to PDF Converter - Convert Images to PDF Free | Toolbox",
-    description: "Convert images (JPG, PNG, WebP) to PDF documents. Sortable pages, custom settings, 100% offline. Free and secure image to PDF converter.",
-    canonicalUrl: `${BASE_URL}/image-to-pdf`
+    title: "Image to PDF Converter - Convert Images to PDF Free | BrowserStay",
+    description: "Convert images (JPG, PNG, WebP) to PDF documents. Sortable pages, custom settings, 100% offline. Free and private — your images never leave your device.",
+    canonicalUrl: `${BASE_URL}/image-to-pdf`,
+    keywords: "image to pdf, jpg to pdf, png to pdf, photos to pdf, image to pdf converter, offline image to pdf, browserstay"
+  },
+  imageResize: {
+    title: "Image Resizer - Resize Images Online Free | BrowserStay",
+    description: "Resize images to any dimension for free. Maintain aspect ratio, batch process multiple images, convert formats — all in your browser with no uploads.",
+    canonicalUrl: `${BASE_URL}/image-resize`,
+    keywords: "image resizer, resize image, resize jpg, resize png, image dimensions, batch resize images, offline resizer, browserstay"
+  },
+  imageCompressor: {
+    title: "Image Compressor - Compress Images Online Free | BrowserStay",
+    description: "Compress images to reduce file size while keeping quality. Smart compression, batch processing, multiple formats — 100% free, private, and processed locally.",
+    canonicalUrl: `${BASE_URL}/image-compressor`,
+    keywords: "image compressor, compress image, reduce image size, compress jpg, compress png, photo compressor, offline compression, browserstay"
+  },
+  qrGenerator: {
+    title: "QR Code Generator - Create Custom QR Codes Free | BrowserStay",
+    description: "Generate custom QR codes for URLs, text, WiFi, and contacts. Customizable colors, sizes, and error correction. 100% free, private, and generated in your browser.",
+    canonicalUrl: `${BASE_URL}/qr-generator`,
+    keywords: "qr code generator, create qr code, wifi qr code, qr code for url, custom qr code, free qr generator, browserstay"
   },
   passwordGenerator: {
-    title: "Secure Password Generator - Free Online Tool | Toolbox",
-    description: "Generate strong, secure passwords instantly in your browser. Customizable length, character types, and options. 100% offline, no data stored.",
-    canonicalUrl: `${BASE_URL}/password-generator`
+    title: "Secure Password Generator - Free Online Tool | BrowserStay",
+    description: "Generate strong, secure passwords instantly in your browser using the Web Crypto API. Customizable length and character types. 100% offline, nothing stored.",
+    canonicalUrl: `${BASE_URL}/password-generator`,
+    keywords: "password generator, strong password, random password, secure password, password creator, offline password generator, browserstay"
   }
 } as const;
 

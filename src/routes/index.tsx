@@ -1,6 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Sparkles, ExternalLink } from "lucide-react"
+import { ShieldCheck, WifiOff, Gift } from "lucide-react"
 import { ToolsSection } from "@/shared/components/layout/tools-section"
+import { TrustBar } from "@/shared/components/layout/trust-bar"
+import { GithubIcon } from "@/shared/components/common"
+import { SITE_CONFIG } from "@/config/site"
 import { BASE_URL } from "@/lib/seo"
 
 export const Route = createFileRoute('/')({
@@ -8,19 +11,23 @@ export const Route = createFileRoute('/')({
   head: () => ({
     meta: [
       {
-        title: "Toolbox - Free Online Tools for PDF, Images & Password Generation",
+        title: "BrowserStay - Free Privacy-First PDF & Image Tools, No Uploads",
       },
       {
         name: "description",
-        content: "Free, privacy-focused online tools. Merge, split, and convert PDFs. Convert, resize, and optimize images. Generate secure passwords. 100% offline, no uploads.",
+        content: "Free, private PDF and image tools that run entirely in your browser. Your files never leave your PC — no uploads, no accounts, no servers, no limits.",
+      },
+      {
+        name: "keywords",
+        content: "pdf tools, image tools, merge pdf, compress image, privacy tools, no upload, browser pdf, browserstay",
       },
       {
         property: "og:title",
-        content: "Toolbox - Free Online Tools",
+        content: "BrowserStay - Free Privacy-First Tools, No Uploads",
       },
       {
         property: "og:description",
-        content: "Free, privacy-focused online tools. Process files locally in your browser with zero uploads.",
+        content: "Free, private PDF & image tools that stay in your browser. Your files never leave your PC.",
       },
     ],
     links: [
@@ -31,6 +38,51 @@ export const Route = createFileRoute('/')({
     ]
   }),
 })
+
+const whyCards = [
+  {
+    icon: ShieldCheck,
+    title: "Private by design",
+    description:
+      "Files are processed in your browser with WebAssembly. Nothing is uploaded — not to the EU, the US, China, or anywhere else. There are no servers to leak your data."
+  },
+  {
+    icon: GithubIcon,
+    title: "Open source",
+    description:
+      "Every line of code is public on GitHub under Apache 2.0. Auditable, forever free, and yours. If you can read code, you can verify exactly what happens to your files."
+  },
+  {
+    icon: WifiOff,
+    title: "Works offline",
+    description:
+      "No internet needed after the page loads. Your data stays on your device — even if your connection drops, your work doesn't."
+  },
+  {
+    icon: Gift,
+    title: "Free, no limits",
+    description:
+      "No account, no watermark, no file-size caps, no premium paywall. Just fast, private tools that respect you and your files."
+  }
+]
+
+const howItWorks = [
+  {
+    step: "1",
+    title: "Choose a tool",
+    description: "Pick the PDF or image tool you need — merge, split, convert, resize, compress, and more."
+  },
+  {
+    step: "2",
+    title: "Add your files",
+    description: "Drag and drop files from your device. They stay in your browser the entire time."
+  },
+  {
+    step: "3",
+    title: "Download the result",
+    description: "Get your finished file instantly. Nothing uploaded, nothing stored, nothing to worry about."
+  }
+]
 
 function HomePage() {
   return (
@@ -46,63 +98,97 @@ function HomePage() {
       <section className="relative z-10 pt-24 pb-6 md:pt-32 md:pb-8 px-6">
         <div className="container mx-auto relative z-10 text-center max-w-4xl">
           <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm text-primary font-medium mb-8">
-            <Sparkles className="w-4 h-4 mr-2" />
-            <span>Toolbox v1.0 is live</span>
+            <ShieldCheck className="w-4 h-4 mr-2" />
+            <span>Free forever · No uploads · No sign-up</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-foreground mb-8">
-            Supercharge your <br className="hidden md:block" /> workflow today.
+            Your files never leave <br className="hidden md:block" /> your PC.
           </h1>
 
           <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
-            A privacy-focused collection of free, powerful utilities. Process files locally in your browser with zero
-            upload wait times.
+            BrowserStay is a free, open-source collection of PDF and image tools that run entirely in
+            your browser. No uploads. No accounts. No servers. No waiting.
           </p>
+
+          <TrustBar />
         </div>
       </section>
 
       {/* Tools Grid */}
       <ToolsSection />
 
-      {/* Recommended Partner Section */}
-      <section className="max-w-4xl mx-auto mt-16 mb-8 px-4">
-        <div className="relative bg-linear-to-r from-primary/5 to-secondary/5 rounded-2xl p-6 md:p-8 border border-primary/20">
-          <div className="flex flex-col gap-6">
+      {/* Why BrowserStay */}
+      <section className="container mx-auto px-6 pb-24 relative z-10">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Why BrowserStay?</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Most online tools upload your files to their servers. We don't — because we built every
+              tool to run right in your browser.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {whyCards.map((card) => (
+              <div
+                key={card.title}
+                className="rounded-2xl border border-border/40 bg-card p-6 hover:border-border/80 transition-colors"
+              >
+                <div className="p-2.5 rounded-xl bg-primary/10 text-primary w-fit mb-4">
+                  <card.icon className="w-5 h-5" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">{card.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{card.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="container mx-auto px-6 pb-24 relative z-10">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">How it works</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Three simple steps. No account, no installation, no learning curve.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {howItWorks.map((item) => (
+              <div
+                key={item.step}
+                className="rounded-2xl border border-border/40 bg-card p-6 text-center"
+              >
+                <div className="text-3xl font-bold text-primary mb-3">{item.step}</div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Open Source Callout */}
+      <section className="container mx-auto px-6 pb-24 relative z-10">
+        <div className="max-w-6xl mx-auto">
+          <div className="relative bg-linear-to-r from-primary/5 to-secondary/5 rounded-2xl p-6 md:p-8 border border-primary/20 text-center">
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs md:text-sm font-medium w-fit">
-                <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
-                Recommended Partner
-              </div>
               <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground">
-                Quiz Zone - Master Your Knowledge
+                100% open source. Yours forever.
               </h2>
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                Explore thousands of curated quizzes across diverse topics. Challenge yourself with <span className="font-semibold text-foreground">new quizzes added daily</span> across <span className="font-semibold text-foreground">all categories</span>. Track your journey to mastery.
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                BrowserStay is built in the open and released under the Apache 2.0 license. That means
+                it's free to use, free to audit, and free to build on — today and always.
               </p>
-              <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  <span>Free Access</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                  <span>All Skill Levels</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                  <span>Daily Updates</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-start">
               <a
-                href="https://quizzy.probir.dev/"
+                href={SITE_CONFIG.links.github}
                 target="_blank"
-                rel="noopener noreferrer sponsored"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors shadow-lg text-sm md:text-base"
               >
-                Explore Quizzes
-                <ExternalLink className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <GithubIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                View source on GitHub
               </a>
             </div>
           </div>

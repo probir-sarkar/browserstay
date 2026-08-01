@@ -30,11 +30,15 @@ export const Route = createFileRoute('/image-resize')({
   head: () => ({
     meta: [
       {
-        title: "Image Resizer - Resize Images Online Free | Toolbox",
+        title: "Image Resizer - Resize Images Online Free | BrowserStay",
       },
       {
         name: "description",
-        content: "Resize images to any dimension online for free. Maintain aspect ratio, batch processing, multiple formats. 100% free, private, and works offline.",
+        content: "Resize images to any dimension for free. Maintain aspect ratio, batch process multiple images, convert formats — all in your browser with no uploads.",
+      },
+      {
+        name: "keywords",
+        content: "image resizer, resize image, resize jpg, resize png, image dimensions, batch resize images, offline resizer, browserstay",
       },
       {
         property: "og:title",
@@ -42,7 +46,7 @@ export const Route = createFileRoute('/image-resize')({
       },
       {
         property: "og:description",
-        content: "Resize images to any dimension. 100% free and works offline.",
+        content: "Resize images to any dimension in your browser. 100% free, no uploads.",
       },
     ],
     links: [

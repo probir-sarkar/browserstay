@@ -43,11 +43,15 @@ export const Route = createFileRoute('/split-pdf')({
   head: () => ({
     meta: [
       {
-        title: "Split PDF File - Extract Pages Free Online | Toolbox",
+        title: "Split PDF File - Extract Pages Free Online | BrowserStay",
       },
       {
         name: "description",
-        content: "Split PDF files and extract pages for free. Works offline, no uploads. Separate PDF into individual pages or extract specific pages.",
+        content: "Split PDF files and extract pages for free. Separate a PDF into individual pages or extract specific ranges — all locally in your browser, no uploads, 100% private.",
+      },
+      {
+        name: "keywords",
+        content: "split pdf, extract pages from pdf, split pdf online, pdf page extractor, offline split pdf, browserstay",
       },
       {
         property: "og:title",
@@ -55,7 +59,7 @@ export const Route = createFileRoute('/split-pdf')({
       },
       {
         property: "og:description",
-        content: "Split PDF files and extract pages. Works offline, no uploads.",
+        content: "Split PDF files and extract pages. In your browser, no uploads.",
       },
     ],
     links: [

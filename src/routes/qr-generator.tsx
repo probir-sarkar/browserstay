@@ -34,19 +34,23 @@ export const Route = createFileRoute('/qr-generator')({
   head: () => ({
     meta: [
       {
-        title: "QR Code Generator - Create Custom QR Codes Free | Toolbox",
+        title: "QR Code Generator - Create Custom QR Codes Free | BrowserStay",
       },
       {
         name: "description",
-        content: "Generate custom QR codes for URLs, text, WiFi, and contacts. Customizable colors, sizes, and error correction. 100% free, private, and works offline.",
+        content: "Generate custom QR codes for URLs, text, WiFi, and contacts. Customizable colors, sizes, and error correction. 100% free, private, and generated in your browser.",
+      },
+      {
+        name: "keywords",
+        content: "qr code generator, create qr code, wifi qr code, qr code for url, custom qr code, free qr generator, browserstay",
       },
       {
         property: "og:title",
-        content: "QR Code Generator - Free Online",
+        content: "QR Code Generator - Free & Private",
       },
       {
         property: "og:description",
-        content: "Generate custom QR codes. 100% free and works offline.",
+        content: "Generate custom QR codes in your browser. 100% free, no uploads.",
       },
     ],
     links: [

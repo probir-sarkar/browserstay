@@ -1,75 +1,76 @@
-# Toolbox
+# BrowserStay
 
-A collection of web-based tools and utilities built with React, Vite, and Cloudflare Workers.
+**Free, private, open-source PDF & image tools that stay in your browser.**
 
-## Features
+Your files never leave your PC. BrowserStay runs every tool entirely in your browser with WebAssembly — no uploads, no accounts, no servers, no limits.
 
-- **Image Tools**
-  - Image resizing and compression
-  - Browser-based image optimization
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-- **PDF Tools**
-  - PDF manipulation with pdf-lib and jsPDF
-  - PDF.js for document rendering
-  - ZIP file generation for downloads
+---
 
-- **QR Code Generation**
-  - Create QR codes with qrcode library
-  - Download generated codes
+## Why BrowserStay?
 
-- **Modern UI/UX**
-  - Built with React 19 and Vite
-  - TanStack Router for routing
-  - Tailwind CSS v4 for styling
-  - Dark mode support with next-themes
-  - Drag-and-drop functionality with dnd-kit
-  - Icons from Huge Icons and Lucide React
+Most "free" online tools secretly upload your files to their servers. BrowserStay is different:
+
+- **100% private** — Files are processed locally with WebAssembly in a Web Worker. Nothing is ever uploaded — not to the EU, the US, China, or anywhere else. There are no servers to leak your data.
+- **Open source** — Every line of code is public under the Apache 2.0 license. Auditable, forever free, and yours.
+- **Works offline** — Once the page loads, no internet is needed. Your data stays on your device.
+- **Free, no limits** — No account, no watermark, no file-size caps, no premium paywall.
+
+## Tools
+
+### PDF Tools
+- **PDF to Image** — Convert PDF pages to high-quality JPG or PNG images.
+- **Image to PDF** — Turn images into a single PDF with sortable pages.
+- **Merge PDF** — Combine multiple PDFs into one document.
+- **Split PDF** — Extract specific pages or split into separate files.
+
+### Image Tools
+- **Image Converter** — Batch convert between JPG, PNG, WebP, and AVIF.
+- **Image Resizer** — Resize images to any dimension with aspect-ratio control.
+- **Image Compressor** — Reduce file size while keeping quality.
+
+### Security & Developer
+- **Password Generator** — Cryptographically strong passwords via the Web Crypto API.
+- **QR Code Generator** — Custom QR codes for URLs, text, WiFi, and contacts.
 
 ## Tech Stack
 
-- **Frontend**: React 19, Vite, TypeScript
-- **Routing**: TanStack Router & Start
-- **Styling**: Tailwind CSS v4, class-variance-authority
-- **State Management**: Immer
-- **UI Components**: Base UI, Radix UI
+- **Frontend**: React 19, Vite, TypeScript, TanStack Router
+- **Processing**: WebAssembly codecs (via `@jsquash/*`), Web Workers + Comlink
+- **Styling**: Tailwind CSS v4, shadcn-style components
 - **Deployment**: Cloudflare Workers
-- **Build Tools**: Vite, TypeScript, ESLint
 
 ## Getting Started
 
 ### Prerequisites
 
-- [pnpm](https://pnpm.io)
-- Cloudflare Workers account (for deployment)
+- [Bun](https://bun.sh) or [pnpm](https://pnpm.io)
 
 ### Installation
 
 ```bash
-# Install dependencies
-pnpm install
+bun install
 ```
 
 ### Development
 
 ```bash
-# Start development server
-pnpm dev
+bun run dev
 ```
 
-The application will be available at `http://localhost:3000`
+The application will be available at `http://localhost:3000`.
 
 ### Build
 
 ```bash
-# Build for production
-pnpm build
+bun run build
 ```
 
 ### Deployment
 
 ```bash
-# Deploy to Cloudflare Workers
-pnpm deploy
+bun run deploy
 ```
 
 ## Project Structure
@@ -78,8 +79,6 @@ pnpm deploy
 - **Configuration**: Vite config for build setup
 - **Workers**: Cloudflare Workers configuration for deployment
 - **Types**: Auto-generated Cloudflare types in `worker-configuration.d.ts`
-
-> See [AGENTS.md](./AGENTS.md) for file naming conventions and AI agent guidelines.
 
 ## License
 

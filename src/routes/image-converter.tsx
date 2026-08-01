@@ -11,19 +11,23 @@ export const Route = createFileRoute('/image-converter')({
   head: () => ({
     meta: [
       {
-        title: "Image Converter - Convert Images Online Free | Toolbox",
+        title: "Image Converter - Convert Images Online Free | BrowserStay",
       },
       {
         name: "description",
-        content: "Convert images between JPG, PNG, WebP, and AVIF. High-quality WebAssembly encoding, batch processing. 100% free, private, and works offline.",
+        content: "Convert images between JPG, PNG, WebP, and AVIF free. High-quality WebAssembly encoding runs entirely in your browser — no uploads, no limits, 100% private.",
+      },
+      {
+        name: "keywords",
+        content: "image converter, convert jpg to png, webp to jpg, avif converter, image format converter, offline image converter, browserstay",
       },
       {
         property: "og:title",
-        content: "Image Converter - Free Online",
+        content: "Image Converter - Free & Private",
       },
       {
         property: "og:description",
-        content: "Convert images between formats. 100% free and works offline.",
+        content: "Convert images between formats in your browser. 100% free, no uploads.",
       },
     ],
     links: [

@@ -10,19 +10,23 @@ export const Route = createFileRoute('/password-generator')({
   head: () => ({
     meta: [
       {
-        title: "Secure Password Generator - Free Online Tool | Toolbox",
+        title: "Secure Password Generator - Free Online Tool | BrowserStay",
       },
       {
         name: "description",
-        content: "Generate strong, secure passwords instantly in your browser. Customizable length, character types, and options. 100% offline, no data stored.",
+        content: "Generate strong, secure passwords instantly in your browser using the Web Crypto API. Customizable length and character types. 100% offline, nothing stored.",
+      },
+      {
+        name: "keywords",
+        content: "password generator, strong password, random password, secure password, password creator, offline password generator, browserstay",
       },
       {
         property: "og:title",
-        content: "Secure Password Generator - Free Online",
+        content: "Secure Password Generator - Free",
       },
       {
         property: "og:description",
-        content: "Generate strong, secure passwords instantly. Works offline, no data stored.",
+        content: "Generate strong, secure passwords in your browser. Works offline, nothing stored.",
       },
     ],
     links: [

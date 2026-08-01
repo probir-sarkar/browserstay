@@ -27,7 +27,7 @@ export default defineConfig({
       },
       sitemap: {
         enabled: true,
-        host: "https://toolbox.probir.dev"
+        host: "https://browserstay.com"
       }
     }),
     viteReact()

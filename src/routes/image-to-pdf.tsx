@@ -30,11 +30,15 @@ export const Route = createFileRoute('/image-to-pdf')({
   head: () => ({
     meta: [
       {
-        title: "Image to PDF Converter - Convert Images to PDF Free | Toolbox",
+        title: "Image to PDF Converter - Convert Images to PDF Free | BrowserStay",
       },
       {
         name: "description",
-        content: "Convert images (JPG, PNG, WebP) to PDF documents. Sortable pages, custom settings, 100% offline. Free and secure image to PDF converter.",
+        content: "Convert images (JPG, PNG, WebP) to PDF documents. Sortable pages, custom settings, 100% offline. Free and private — your images never leave your device.",
+      },
+      {
+        name: "keywords",
+        content: "image to pdf, jpg to pdf, png to pdf, photos to pdf, image to pdf converter, offline image to pdf, browserstay",
       },
       {
         property: "og:title",
@@ -42,7 +46,7 @@ export const Route = createFileRoute('/image-to-pdf')({
       },
       {
         property: "og:description",
-        content: "Convert images to PDF documents. Custom settings, 100% offline.",
+        content: "Convert images to PDF documents. 100% offline, no uploads.",
       },
     ],
     links: [

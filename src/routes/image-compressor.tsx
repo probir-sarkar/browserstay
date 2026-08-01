@@ -30,19 +30,23 @@ export const Route = createFileRoute('/image-compressor')({
   head: () => ({
     meta: [
       {
-        title: "Image Compressor - Compress Images Online Free | Toolbox",
+        title: "Image Compressor - Compress Images Online Free | BrowserStay",
       },
       {
         name: "description",
-        content: "Compress images to reduce file size while maintaining quality. Smart compression, batch processing, multiple formats. 100% free, private, and works offline.",
+        content: "Compress images to reduce file size while keeping quality. Smart compression, batch processing, multiple formats — 100% free, private, and processed locally in your browser.",
+      },
+      {
+        name: "keywords",
+        content: "image compressor, compress image, reduce image size, compress jpg, compress png, photo compressor, offline compression, browserstay",
       },
       {
         property: "og:title",
-        content: "Image Compressor - Free Online",
+        content: "Image Compressor - Free & Private",
       },
       {
         property: "og:description",
-        content: "Compress images to reduce file size. 100% free and works offline.",
+        content: "Compress images to reduce file size. 100% free, processed in your browser.",
       },
     ],
     links: [

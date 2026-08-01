@@ -15,19 +15,23 @@ export const Route = createFileRoute('/pdf-to-image')({
   head: () => ({
     meta: [
       {
-        title: "PDF to Image Converter - Free & Online | Toolbox",
+        title: "PDF to Image Converter - Free & Private | BrowserStay",
       },
       {
         name: "description",
-        content: "Convert PDF pages to high-quality images (JPG, PNG) for free. Works offline, no uploads. Fast, secure, and completely private PDF to image conversion.",
+        content: "Convert PDF pages to high-quality JPG or PNG images for free. 100% in your browser with WebAssembly — no uploads, works offline, and nothing ever leaves your PC.",
+      },
+      {
+        name: "keywords",
+        content: "pdf to image, convert pdf to jpg, pdf to png, pdf converter, offline pdf to image, browserstay",
       },
       {
         property: "og:title",
-        content: "PDF to Image Converter - Free & Online",
+        content: "PDF to Image Converter - Free & Private",
       },
       {
         property: "og:description",
-        content: "Convert PDF pages to high-quality images. Works offline, no uploads. Fast and secure.",
+        content: "Convert PDF pages to high-quality images. No uploads, works offline.",
       },
     ],
     links: [

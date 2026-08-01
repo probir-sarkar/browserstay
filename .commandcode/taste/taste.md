@@ -8,3 +8,4 @@
 - Values clear feature differentiation — features should have distinct, meaningful identities and real technical differences (e.g., actual compression techniques vs. just different quality defaults), not just cosmetic differences like naming or default settings. Confidence: 0.7
 - Prefers using Bun as the project runtime/toolchain over npm or other Node.js runtimes. Confidence: 0.9
 - Values keeping dependencies up to date — proactively requests updating libraries (e.g., @base-ui/react, shadcn) to their latest versions rather than staying on older releases. Confidence: 0.8
+- Expects completed work to be committed and pushed to git (commit + push) rather than left uncommitted in the working tree. Confidence: 0.6

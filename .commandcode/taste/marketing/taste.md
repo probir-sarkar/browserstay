@@ -1,0 +1,9 @@
+# Marketing & Product Positioning
+
+- Prefers marketing that targets the general public in plain, non-technical language rather than developer/tech-enthusiast audiences. Confidence: 0.9
+- Wants privacy to be the central selling point: "no EU, no USA, no China — only on your PC," no uploads, no servers, files never leave the device. Confidence: 0.9
+- Wants "free" and "open source" promoted as headline pillars of the product, not buried details. Confidence: 0.8
+- Wants WASM/on-device processing framed as a credibility/quality differentiator behind the privacy headline in marketing copy. Confidence: 0.7
+- Values a distinct, brandable product name with a matching available `.com` domain over a generic existing name, for SEO winnability. Confidence: 0.8
+- Cares about SEO infrastructure correctness: sitemap/robots/canonical/OG URLs pointing at the real production domain, a real og-image, and structured data (JSON-LD). Confidence: 0.7
+- Removes off-brand content (e.g., partner/promo banners like "Quiz Zone") from marketing pages because it undermines trust for a privacy-focused brand. Confidence: 0.6

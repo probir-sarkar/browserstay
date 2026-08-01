@@ -34,20 +34,24 @@ export const Route = createFileRoute("/merge-pdf")({
   head: () => ({
     meta: [
       {
-        title: "Merge PDF Files - Free Online PDF Combiner | Toolbox"
+        title: "Merge PDF Files - Free Online PDF Combiner | BrowserStay"
       },
       {
         name: "description",
         content:
-          "Combine multiple PDF files into one document for free. Fast, secure, and works offline. No uploads, no registration. Merge PDFs in seconds."
+          "Combine multiple PDF files into one document for free. Merge PDFs in seconds — no uploads, no registration, 100% private and processed locally in your browser."
+      },
+      {
+        name: "keywords",
+        content: "merge pdf, combine pdf, join pdf, pdf combiner, merge pdf files free, offline merge pdf, browserstay"
       },
       {
         property: "og:title",
-        content: "Merge PDF Files - Free Online"
+        content: "Merge PDF Files - Free & Private"
       },
       {
         property: "og:description",
-        content: "Combine multiple PDFs into one. Fast, secure, and works offline."
+        content: "Combine multiple PDFs into one. In your browser, no uploads."
       }
     ],
     links: [

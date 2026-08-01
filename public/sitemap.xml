@@ -1,62 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://toolbox.com/</loc>
+    <loc>https://browserstay.com/</loc>
+    <lastmod>2026-08-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://toolbox.com/pdf-to-image</loc>
+    <loc>https://browserstay.com/pdf-to-image</loc>
+    <lastmod>2026-08-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolbox.com/password-generator</loc>
+    <loc>https://browserstay.com/password-generator</loc>
+    <lastmod>2026-08-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolbox.com/merge-pdf</loc>
+    <loc>https://browserstay.com/merge-pdf</loc>
+    <lastmod>2026-08-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolbox.com/split-pdf</loc>
+    <loc>https://browserstay.com/split-pdf</loc>
+    <lastmod>2026-08-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolbox.com/image-converter</loc>
+    <loc>https://browserstay.com/image-converter</loc>
+    <lastmod>2026-08-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolbox.com/image-to-pdf</loc>
+    <loc>https://browserstay.com/image-to-pdf</loc>
+    <lastmod>2026-08-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolbox.com/image-resize</loc>
+    <loc>https://browserstay.com/image-resize</loc>
+    <lastmod>2026-08-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolbox.com/image-compressor</loc>
+    <loc>https://browserstay.com/image-compressor</loc>
+    <lastmod>2026-08-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolbox.com/qr-generator</loc>
+    <loc>https://browserstay.com/qr-generator</loc>
+    <lastmod>2026-08-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolbox.com/pdf-tools</loc>
+    <loc>https://browserstay.com/pdf-tools</loc>
+    <lastmod>2026-08-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://toolbox.com/image-tools</loc>
+    <loc>https://browserstay.com/image-tools</loc>
+    <lastmod>2026-08-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
