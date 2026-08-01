@@ -8,39 +8,11 @@ import { PdfDropZone } from "@/features/pdf-to-image/components/pdf-drop-zone"
 import { PdfFileList } from "@/features/pdf-to-image/components/pdf-file-list"
 import { ActionCard } from "@/features/pdf-to-image/components/action-card"
 import { PdfToImageProvider } from "@/features/pdf-to-image/context"
-import { BASE_URL } from "@/lib/seo"
+import { generateMetaFromKey } from "@/lib/seo"
 
 export const Route = createFileRoute('/pdf-to-image')({
   component: PdfToImagePage,
-  head: () => ({
-    meta: [
-      {
-        title: "PDF to Image Converter - Free & Private | BrowserStay",
-      },
-      {
-        name: "description",
-        content: "Convert PDF pages to high-quality JPG or PNG images for free. 100% in your browser with WebAssembly — no uploads, works offline, and nothing ever leaves your PC.",
-      },
-      {
-        name: "keywords",
-        content: "pdf to image, convert pdf to jpg, pdf to png, pdf converter, offline pdf to image, browserstay",
-      },
-      {
-        property: "og:title",
-        content: "PDF to Image Converter - Free & Private",
-      },
-      {
-        property: "og:description",
-        content: "Convert PDF pages to high-quality images. No uploads, works offline.",
-      },
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `${BASE_URL}/pdf-to-image`
-      }
-    ]
-  }),
+  head: () => generateMetaFromKey('pdfToImage'),
 })
 
 function PdfToImagePage() {
@@ -49,7 +21,7 @@ function PdfToImagePage() {
       <div className="max-w-6xl mx-auto">
         <PageHeader
           title="Convert PDF to Image"
-          subtitle="Convert PDF pages to high-quality images with no uploads. Works offline, fast, and secure."
+          subtitle="Convert PDF pages to high-quality images with no uploads. Fully local processing, fast, and secure."
         />
 
         <PdfToImageProvider>

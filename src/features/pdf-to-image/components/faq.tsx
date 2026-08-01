@@ -4,7 +4,7 @@ const FAQ_ITEMS = [
   {
     question: "Is it really offline?",
     answer:
-      "Yes. Conversion happens entirely in your browser. After the first load, it can work without an internet connection."
+      "Processing is entirely local. Conversion happens in your browser, and your PDFs never leave your device. An internet connection is only needed to load the page itself."
   },
   {
     question: "Do you upload my files?",

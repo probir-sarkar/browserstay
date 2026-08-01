@@ -28,7 +28,7 @@ export function generateMeta(config: MetaConfig) {
     description,
     ogTitle = title,
     ogDescription = description,
-    ogImage = "/og-image.png",
+    ogImage = `${BASE_URL}/og-image.png`,
     twitterCard = "summary_large_image",
     canonicalUrl,
     keywords
@@ -41,13 +41,13 @@ export function generateMeta(config: MetaConfig) {
       ...(keywords ? [{ name: "keywords", content: keywords }] : []),
       { property: "og:title", content: ogTitle },
       { property: "og:description", content: ogDescription },
-      { property: "og:image", content: ogImage },
+      { property: "og:image", content: ogImage.startsWith("http") ? ogImage : `${BASE_URL}${ogImage}` },
       { property: "og:type", content: "website" },
       { property: "og:url", content: canonicalUrl },
       { name: "twitter:card", content: twitterCard },
       { name: "twitter:title", content: ogTitle },
       { name: "twitter:description", content: ogDescription },
-      { name: "twitter:image", content: ogImage },
+      { name: "twitter:image", content: ogImage.startsWith("http") ? ogImage : `${BASE_URL}${ogImage}` },
     ],
     links: [
       { rel: "canonical", href: canonicalUrl }
@@ -81,45 +81,45 @@ export const metaConfigs = {
   },
   pdfToImage: {
     title: "PDF to Image Converter - Free & Private | BrowserStay",
-    description: "Convert PDF pages to high-quality JPG or PNG images for free. 100% in your browser with WebAssembly — no uploads, works offline, and nothing ever leaves your PC.",
+    description: "Convert PDF pages to high-quality JPG or PNG images for free. 100% in your browser with WebAssembly — no uploads, and nothing ever leaves your PC.",
     canonicalUrl: `${BASE_URL}/pdf-to-image`,
-    keywords: "pdf to image, convert pdf to jpg, pdf to png, pdf converter, offline pdf to image, browserstay"
+    keywords: "pdf to image, convert pdf to jpg, pdf to png, pdf converter, local pdf to image, browserstay"
   },
   mergePdf: {
     title: "Merge PDF Files - Free Online PDF Combiner | BrowserStay",
     description: "Combine multiple PDF files into one document for free. Merge PDFs in seconds — no uploads, no registration, 100% private and processed locally in your browser.",
     canonicalUrl: `${BASE_URL}/merge-pdf`,
-    keywords: "merge pdf, combine pdf, join pdf, pdf combiner, merge pdf files free, offline merge pdf, browserstay"
+    keywords: "merge pdf, combine pdf, join pdf, pdf combiner, merge pdf files free, local merge pdf, browserstay"
   },
   splitPdf: {
     title: "Split PDF File - Extract Pages Free Online | BrowserStay",
     description: "Split PDF files and extract pages for free. Separate a PDF into individual pages or extract specific ranges — all locally in your browser, no uploads, 100% private.",
     canonicalUrl: `${BASE_URL}/split-pdf`,
-    keywords: "split pdf, extract pages from pdf, split pdf online, pdf page extractor, offline split pdf, browserstay"
+    keywords: "split pdf, extract pages from pdf, split pdf online, pdf page extractor, local split pdf, browserstay"
   },
   imageConverter: {
     title: "Image Converter - Convert Images Online Free | BrowserStay",
     description: "Convert images between JPG, PNG, WebP, and AVIF free. High-quality WebAssembly encoding runs entirely in your browser — no uploads, no limits, 100% private.",
     canonicalUrl: `${BASE_URL}/image-converter`,
-    keywords: "image converter, convert jpg to png, webp to jpg, avif converter, image format converter, offline image converter, browserstay"
+    keywords: "image converter, convert jpg to png, webp to jpg, avif converter, image format converter, local image converter, browserstay"
   },
   imageToPdf: {
     title: "Image to PDF Converter - Convert Images to PDF Free | BrowserStay",
-    description: "Convert images (JPG, PNG, WebP) to PDF documents. Sortable pages, custom settings, 100% offline. Free and private — your images never leave your device.",
+    description: "Convert images (JPG, PNG, WebP) to PDF documents. Sortable pages, custom settings, fully local processing. Free and private — your images never leave your device.",
     canonicalUrl: `${BASE_URL}/image-to-pdf`,
-    keywords: "image to pdf, jpg to pdf, png to pdf, photos to pdf, image to pdf converter, offline image to pdf, browserstay"
+    keywords: "image to pdf, jpg to pdf, png to pdf, photos to pdf, image to pdf converter, local image to pdf, browserstay"
   },
   imageResize: {
     title: "Image Resizer - Resize Images Online Free | BrowserStay",
     description: "Resize images to any dimension for free. Maintain aspect ratio, batch process multiple images, convert formats — all in your browser with no uploads.",
     canonicalUrl: `${BASE_URL}/image-resize`,
-    keywords: "image resizer, resize image, resize jpg, resize png, image dimensions, batch resize images, offline resizer, browserstay"
+    keywords: "image resizer, resize image, resize jpg, resize png, image dimensions, batch resize images, local resizer, browserstay"
   },
   imageCompressor: {
     title: "Image Compressor - Compress Images Online Free | BrowserStay",
     description: "Compress images to reduce file size while keeping quality. Smart compression, batch processing, multiple formats — 100% free, private, and processed locally.",
     canonicalUrl: `${BASE_URL}/image-compressor`,
-    keywords: "image compressor, compress image, reduce image size, compress jpg, compress png, photo compressor, offline compression, browserstay"
+    keywords: "image compressor, compress image, reduce image size, compress jpg, compress png, photo compressor, local compression, browserstay"
   },
   qrGenerator: {
     title: "QR Code Generator - Create Custom QR Codes Free | BrowserStay",
@@ -129,9 +129,9 @@ export const metaConfigs = {
   },
   passwordGenerator: {
     title: "Secure Password Generator - Free Online Tool | BrowserStay",
-    description: "Generate strong, secure passwords instantly in your browser using the Web Crypto API. Customizable length and character types. 100% offline, nothing stored.",
+    description: "Generate strong, secure passwords instantly in your browser using the Web Crypto API. Customizable length and character types. Fully local — nothing is stored or sent.",
     canonicalUrl: `${BASE_URL}/password-generator`,
-    keywords: "password generator, strong password, random password, secure password, password creator, offline password generator, browserstay"
+    keywords: "password generator, strong password, random password, secure password, password creator, local password generator, browserstay"
   }
 } as const;
 

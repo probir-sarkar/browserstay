@@ -14,7 +14,7 @@ Most "free" online tools secretly upload your files to their servers. BrowserSta
 
 - **100% private** — Files are processed locally with WebAssembly inside a Web Worker. Nothing is ever uploaded — not to the EU, the US, China, or anywhere else. There are no servers to leak your data.
 - **Open source** — Every line of code is public under the Apache 2.0 license. Auditable, forever free, and yours.
-- **Works offline** — Once the page loads, no internet is needed. Your data stays on your device.
+- **Local by design** — Once the page loads, all processing happens on your device. Your data stays on your computer.
 - **Free, no limits** — No account, no watermark, no file-size caps, no premium paywall.
 
 ## Tools

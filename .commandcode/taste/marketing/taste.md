@@ -8,3 +8,4 @@
 - Cares about SEO infrastructure correctness: sitemap/robots/canonical/OG URLs pointing at the real production domain, a real og-image, and structured data (JSON-LD). Confidence: 0.7
 - Removes off-brand content (e.g., partner/promo banners like "Quiz Zone") from marketing pages because it undermines trust for a privacy-focused brand. Confidence: 0.6
 - Wants visual/brand assets (e.g., the OG image) to use the brand theme color (#1db6a5 teal) so marketing materials match the site's color scheme instead of arbitrary placeholder colors. Confidence: 0.7
+- Wants marketing/product claims to be technically accurate — avoids overstating capability (e.g., removing "100% offline / works offline" copy when no service worker exists, replacing it with accurate "local processing" wording) rather than promising features that aren't implemented. Confidence: 0.7

@@ -7,7 +7,7 @@ import { SplitFileDetails } from "@/features/split-pdf/components/file-details"
 import { SplitControls } from "@/features/split-pdf/components/split-controls"
 import { SplitError } from "@/features/split-pdf/components/error-display"
 import { SplitPdfProvider, useSplitPdfContext } from "@/features/split-pdf/context"
-import { BASE_URL } from "@/lib/seo"
+import { generateMetaFromKey } from "@/lib/seo"
 
 function SplitPdfContent() {
   const { fileData } = useSplitPdfContext()
@@ -40,35 +40,7 @@ const splitPdfFaqItems = [
 
 export const Route = createFileRoute('/split-pdf')({
   component: SplitPdfPage,
-  head: () => ({
-    meta: [
-      {
-        title: "Split PDF File - Extract Pages Free Online | BrowserStay",
-      },
-      {
-        name: "description",
-        content: "Split PDF files and extract pages for free. Separate a PDF into individual pages or extract specific ranges — all locally in your browser, no uploads, 100% private.",
-      },
-      {
-        name: "keywords",
-        content: "split pdf, extract pages from pdf, split pdf online, pdf page extractor, offline split pdf, browserstay",
-      },
-      {
-        property: "og:title",
-        content: "Split PDF File - Extract Pages Free",
-      },
-      {
-        property: "og:description",
-        content: "Split PDF files and extract pages. In your browser, no uploads.",
-      },
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `${BASE_URL}/split-pdf`
-      }
-    ]
-  }),
+  head: () => generateMetaFromKey('splitPdf'),
 })
 
 function SplitPdfPage() {

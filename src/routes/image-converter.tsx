@@ -4,39 +4,11 @@ import { HowItWorks } from "@/shared/components/layout/how-it-works"
 import { FAQSection } from "@/shared/components/layout/faq-section"
 import { ImageConverter } from "@/features/image-converter/image-converter"
 import { ImageConverterProvider } from "@/features/image-converter/context"
-import { BASE_URL } from "@/lib/seo"
+import { generateMetaFromKey } from "@/lib/seo"
 
 export const Route = createFileRoute('/image-converter')({
   component: ImageConverterPage,
-  head: () => ({
-    meta: [
-      {
-        title: "Image Converter - Convert Images Online Free | BrowserStay",
-      },
-      {
-        name: "description",
-        content: "Convert images between JPG, PNG, WebP, and AVIF free. High-quality WebAssembly encoding runs entirely in your browser — no uploads, no limits, 100% private.",
-      },
-      {
-        name: "keywords",
-        content: "image converter, convert jpg to png, webp to jpg, avif converter, image format converter, offline image converter, browserstay",
-      },
-      {
-        property: "og:title",
-        content: "Image Converter - Free & Private",
-      },
-      {
-        property: "og:description",
-        content: "Convert images between formats in your browser. 100% free, no uploads.",
-      },
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `${BASE_URL}/image-converter`
-      }
-    ]
-  }),
+  head: () => generateMetaFromKey('imageConverter'),
 })
 
 function ImageConverterPage() {
@@ -80,7 +52,7 @@ function ImageConverterPage() {
             items={[
               {
                 question: "Is it really offline?",
-                answer: "Yes. All image processing happens in your browser using WebAssembly. Your photos are never uploaded to any server."
+                answer: "Processing is 100% local. All image encoding happens in your browser using WebAssembly, and your photos are never uploaded to any server. An internet connection is needed to load the page, but your files never leave your device."
               },
               {
                 question: "What formats are supported?",

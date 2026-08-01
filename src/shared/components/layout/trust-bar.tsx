@@ -6,7 +6,7 @@ import { GithubIcon } from "@/shared/components/common";
 type Props = { className?: string };
 
 const items = [
-  { icon: ShieldCheck, label: "100% offline" },
+  { icon: ShieldCheck, label: "100% local processing" },
   { icon: Lock, label: "No uploads, no tracking" },
   { icon: Zap, label: "In-browser rendering" },
   { icon: Globe, label: "No servers, anywhere" },

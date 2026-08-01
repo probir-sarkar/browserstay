@@ -4,7 +4,7 @@ import { HowItWorks } from "@/shared/components/layout/how-it-works"
 import { FAQSection } from "@/shared/components/layout/faq-section"
 import { ImageResize } from "@/features/image-resize/image-resize"
 import { ImageResizeProvider } from "@/features/image-resize/context"
-import { BASE_URL } from "@/lib/seo"
+import { generateMetaFromKey } from "@/lib/seo"
 
 const imageResizeFaqItems = [
   {
@@ -27,35 +27,7 @@ const imageResizeFaqItems = [
 
 export const Route = createFileRoute('/image-resize')({
   component: ImageResizePage,
-  head: () => ({
-    meta: [
-      {
-        title: "Image Resizer - Resize Images Online Free | BrowserStay",
-      },
-      {
-        name: "description",
-        content: "Resize images to any dimension for free. Maintain aspect ratio, batch process multiple images, convert formats — all in your browser with no uploads.",
-      },
-      {
-        name: "keywords",
-        content: "image resizer, resize image, resize jpg, resize png, image dimensions, batch resize images, offline resizer, browserstay",
-      },
-      {
-        property: "og:title",
-        content: "Image Resizer - Resize Images Free",
-      },
-      {
-        property: "og:description",
-        content: "Resize images to any dimension in your browser. 100% free, no uploads.",
-      },
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `${BASE_URL}/image-resize`
-      }
-    ]
-  }),
+  head: () => generateMetaFromKey('imageResize'),
 })
 
 function ImageResizePage() {

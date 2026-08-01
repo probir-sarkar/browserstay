@@ -32,10 +32,6 @@ export const Route = createRootRoute({
         content: "website"
       },
       {
-        property: "og:url",
-        content: BASE_URL
-      },
-      {
         property: "og:title",
         content: "BrowserStay - Free Privacy-First Tools, No Uploads"
       },
@@ -97,7 +93,7 @@ export const Route = createRootRoute({
             "Merge, split, and convert PDFs",
             "Convert, resize, and compress images",
             "QR code and password generation",
-            "100% offline, no uploads"
+            "100% local processing, no uploads"
           ]
         })
       }

@@ -4,39 +4,11 @@ import { ToolsSection } from "@/shared/components/layout/tools-section"
 import { TrustBar } from "@/shared/components/layout/trust-bar"
 import { GithubIcon } from "@/shared/components/common"
 import { SITE_CONFIG } from "@/config/site"
-import { BASE_URL } from "@/lib/seo"
+import { generateMetaFromKey } from "@/lib/seo"
 
 export const Route = createFileRoute('/')({
   component: HomePage,
-  head: () => ({
-    meta: [
-      {
-        title: "BrowserStay - Free Privacy-First PDF & Image Tools, No Uploads",
-      },
-      {
-        name: "description",
-        content: "Free, private PDF and image tools that run entirely in your browser. Your files never leave your PC — no uploads, no accounts, no servers, no limits.",
-      },
-      {
-        name: "keywords",
-        content: "pdf tools, image tools, merge pdf, compress image, privacy tools, no upload, browser pdf, browserstay",
-      },
-      {
-        property: "og:title",
-        content: "BrowserStay - Free Privacy-First Tools, No Uploads",
-      },
-      {
-        property: "og:description",
-        content: "Free, private PDF & image tools that stay in your browser. Your files never leave your PC.",
-      },
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `${BASE_URL}/`
-      }
-    ]
-  }),
+  head: () => generateMetaFromKey('home'),
 })
 
 const whyCards = [
@@ -54,9 +26,9 @@ const whyCards = [
   },
   {
     icon: WifiOff,
-    title: "Works offline",
+    title: "Processed on your device",
     description:
-      "No internet needed after the page loads. Your data stays on your device — even if your connection drops, your work doesn't."
+      "Every file is processed locally in your browser — no data is sent anywhere, and once the page loads, your work continues even if your connection drops."
   },
   {
     icon: Gift,

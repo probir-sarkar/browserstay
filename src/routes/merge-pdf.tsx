@@ -8,7 +8,7 @@ import { MergeSettings } from "@/features/merge-pdf/components/settings";
 import { MergeActionCard } from "@/features/merge-pdf/components/action-card";
 import { MergeError } from "@/features/merge-pdf/components/error-display";
 import { MergePdfProvider } from "@/features/merge-pdf/context";
-import { BASE_URL } from "@/lib/seo";
+import { generateMetaFromKey } from "@/lib/seo";
 
 const mergePdfFaqItems = [
   {
@@ -31,36 +31,7 @@ const mergePdfFaqItems = [
 
 export const Route = createFileRoute("/merge-pdf")({
   component: MergePdfPage,
-  head: () => ({
-    meta: [
-      {
-        title: "Merge PDF Files - Free Online PDF Combiner | BrowserStay"
-      },
-      {
-        name: "description",
-        content:
-          "Combine multiple PDF files into one document for free. Merge PDFs in seconds — no uploads, no registration, 100% private and processed locally in your browser."
-      },
-      {
-        name: "keywords",
-        content: "merge pdf, combine pdf, join pdf, pdf combiner, merge pdf files free, offline merge pdf, browserstay"
-      },
-      {
-        property: "og:title",
-        content: "Merge PDF Files - Free & Private"
-      },
-      {
-        property: "og:description",
-        content: "Combine multiple PDFs into one. In your browser, no uploads."
-      }
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `${BASE_URL}/merge-pdf`
-      }
-    ]
-  })
+  head: () => generateMetaFromKey("mergePdf")
 });
 
 function MergePdfPage() {
@@ -69,7 +40,7 @@ function MergePdfPage() {
       <div className="max-w-6xl mx-auto">
         <PageHeader
           title="Merge PDF Files"
-          subtitle="Combine multiple PDFs into a single document. Fast, secure, and fully offline."
+          subtitle="Combine multiple PDFs into a single document. Fast, secure, and fully local."
         />
 
         <MergePdfProvider>
