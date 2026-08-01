@@ -18,7 +18,7 @@ export function Footer() {
                         </p>
                         <div className="flex items-center gap-4 pt-4">
                             <a
-                                href="https://github.com/probir-sarkar/toolbox"
+                                href="https://github.com/probir-sarkar/browserstay"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="p-2 rounded-full bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-colors"

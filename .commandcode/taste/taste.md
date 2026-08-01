@@ -9,4 +9,4 @@
 - Prefers using Bun as the project runtime/toolchain over npm or other Node.js runtimes. Confidence: 0.9
 - Values keeping dependencies up to date — proactively requests updating libraries (e.g., @base-ui/react, shadcn) to their latest versions rather than staying on older releases. Confidence: 0.8
 - Expects completed work to be committed and pushed to git (commit + push) rather than left uncommitted in the working tree — issues terse "commit and push" instructions after each task, with no further detail needed. Confidence: 0.9
-- Treats pasted PR review comment links (e.g., Greptile bot reviews) as actionable tasks: expects the review to be fetched, the flagged issues implemented across all affected files, and the result verified (build + rendered output) before reporting back. Confidence: 0.7
+- Treats pasted PR review comment links (e.g., Greptile bot reviews) as actionable tasks: expects the review to be fetched, the flagged issues implemented across all affected files, and the result verified (build + rendered output) before reporting back. Confidence: 0.85
