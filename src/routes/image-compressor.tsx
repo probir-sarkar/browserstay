@@ -4,7 +4,7 @@ import { HowItWorks } from "@/shared/components/layout/how-it-works"
 import { FAQSection } from "@/shared/components/layout/faq-section"
 import { ImageCompressor } from "@/features/image-compressor/image-compressor"
 import { ImageCompressorProvider } from "@/features/image-compressor/context"
-import { BASE_URL } from "@/lib/seo"
+import { generateMetaFromKey } from "@/lib/seo"
 
 const imageCompressorFaqItems = [
   {
@@ -27,31 +27,7 @@ const imageCompressorFaqItems = [
 
 export const Route = createFileRoute('/image-compressor')({
   component: ImageCompressorPage,
-  head: () => ({
-    meta: [
-      {
-        title: "Image Compressor - Compress Images Online Free | Toolbox",
-      },
-      {
-        name: "description",
-        content: "Compress images to reduce file size while maintaining quality. Smart compression, batch processing, multiple formats. 100% free, private, and works offline.",
-      },
-      {
-        property: "og:title",
-        content: "Image Compressor - Free Online",
-      },
-      {
-        property: "og:description",
-        content: "Compress images to reduce file size. 100% free and works offline.",
-      },
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `${BASE_URL}/image-compressor`
-      }
-    ]
-  }),
+  head: () => generateMetaFromKey('imageCompressor'),
 })
 
 function ImageCompressorPage() {

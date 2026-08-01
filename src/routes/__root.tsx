@@ -5,6 +5,7 @@ import { Navbar } from "@/shared/components/layout/navbar";
 import { Footer } from "@/shared/components/layout/footer";
 import { ThemeProvider } from "@/shared/components/layout/theme-provider";
 import { SkipLink } from "@/shared/components/layout/skip-link";
+import { BASE_URL } from "@/lib/seo";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -14,11 +15,16 @@ export const Route = createRootRoute({
         name: "viewport",
         content: "width=device-width, initial-scale=1"
       },
-      { title: "Toolbox - Free Online Tools for PDF, Images & More" },
+      { title: "BrowserStay - Free Privacy-First PDF & Image Tools, No Uploads" },
       {
         name: "description",
         content:
-          "Free, privacy-focused online tools. Merge, split, and convert PDFs. Convert, resize, and optimize images. Generate secure passwords. 100% offline, no uploads."
+          "Free, private PDF and image tools that run entirely in your browser. Your files never leave your PC — no uploads, no accounts, no servers, no limits."
+      },
+      {
+        name: "keywords",
+        content:
+          "pdf tools, image tools, merge pdf, compress image, privacy tools, no upload, browser pdf, browserstay"
       },
       // Open Graph / Facebook
       {
@@ -26,20 +32,16 @@ export const Route = createRootRoute({
         content: "website"
       },
       {
-        property: "og:url",
-        content: "https://toolbox.com"
-      },
-      {
         property: "og:title",
-        content: "Toolbox - Free Online Tools"
+        content: "BrowserStay - Free Privacy-First Tools, No Uploads"
       },
       {
         property: "og:description",
-        content: "Free, privacy-focused online tools. Process files locally in your browser with zero uploads."
+        content: "Free, private PDF & image tools that stay in your browser. Your files never leave your PC."
       },
       {
         property: "og:image",
-        content: "/og-image.png"
+        content: `${BASE_URL}/og-image.png`
       },
       // Twitter
       {
@@ -48,15 +50,15 @@ export const Route = createRootRoute({
       },
       {
         name: "twitter:title",
-        content: "Toolbox - Free Online Tools"
+        content: "BrowserStay - Free Privacy-First Tools, No Uploads"
       },
       {
         name: "twitter:description",
-        content: "Free, privacy-focused online tools. Process files locally in your browser with zero uploads."
+        content: "Free, private PDF & image tools that stay in your browser. Your files never leave your PC."
       },
       {
         name: "twitter:image",
-        content: "/og-image.png"
+        content: `${BASE_URL}/og-image.png`
       }
     ],
     links: [
@@ -68,6 +70,32 @@ export const Route = createRootRoute({
         rel: "icon",
         type: "image/svg+xml",
         href: "/favicon.svg"
+      }
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          name: "BrowserStay",
+          url: BASE_URL,
+          applicationCategory: "UtilitiesApplication",
+          operatingSystem: "Any",
+          description:
+            "Free, private, open-source PDF and image tools that run entirely in your browser. No uploads, no accounts, no servers.",
+          offers: {
+            "@type": "Offer",
+            price: "0",
+            priceCurrency: "USD"
+          },
+          featureList: [
+            "Merge, split, and convert PDFs",
+            "Convert, resize, and compress images",
+            "QR code and password generation",
+            "100% local processing, no uploads"
+          ]
+        })
       }
     ]
   }),

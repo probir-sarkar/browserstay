@@ -4,7 +4,7 @@ import { HowItWorks } from "@/shared/components/layout/how-it-works"
 import { FAQSection } from "@/shared/components/layout/faq-section"
 import { QRGenerator } from "@/features/qr-generator/qr-generator"
 import { QRGeneratorProvider } from "@/features/qr-generator"
-import { BASE_URL } from "@/lib/seo"
+import { generateMetaFromKey } from "@/lib/seo"
 
 const qrGeneratorFaqItems = [
   {
@@ -31,31 +31,7 @@ const qrGeneratorFaqItems = [
 
 export const Route = createFileRoute('/qr-generator')({
   component: QRGeneratorPage,
-  head: () => ({
-    meta: [
-      {
-        title: "QR Code Generator - Create Custom QR Codes Free | Toolbox",
-      },
-      {
-        name: "description",
-        content: "Generate custom QR codes for URLs, text, WiFi, and contacts. Customizable colors, sizes, and error correction. 100% free, private, and works offline.",
-      },
-      {
-        property: "og:title",
-        content: "QR Code Generator - Free Online",
-      },
-      {
-        property: "og:description",
-        content: "Generate custom QR codes. 100% free and works offline.",
-      },
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `${BASE_URL}/qr-generator`
-      }
-    ]
-  }),
+  head: () => generateMetaFromKey('qrGenerator'),
 })
 
 function QRGeneratorPage() {

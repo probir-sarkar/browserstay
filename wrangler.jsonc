@@ -1,13 +1,13 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "toolbox",
+  "name": "browserstay",
   "compatibility_date": "2026-06-02",
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry",
   "workers_dev": false,
   "routes": [
     {
-      "pattern": "toolbox.probir.dev",
+      "pattern": "browserstay.com",
       "custom_domain": true
     }
   ]

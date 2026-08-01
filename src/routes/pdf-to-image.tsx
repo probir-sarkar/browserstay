@@ -8,35 +8,11 @@ import { PdfDropZone } from "@/features/pdf-to-image/components/pdf-drop-zone"
 import { PdfFileList } from "@/features/pdf-to-image/components/pdf-file-list"
 import { ActionCard } from "@/features/pdf-to-image/components/action-card"
 import { PdfToImageProvider } from "@/features/pdf-to-image/context"
-import { BASE_URL } from "@/lib/seo"
+import { generateMetaFromKey } from "@/lib/seo"
 
 export const Route = createFileRoute('/pdf-to-image')({
   component: PdfToImagePage,
-  head: () => ({
-    meta: [
-      {
-        title: "PDF to Image Converter - Free & Online | Toolbox",
-      },
-      {
-        name: "description",
-        content: "Convert PDF pages to high-quality images (JPG, PNG) for free. Works offline, no uploads. Fast, secure, and completely private PDF to image conversion.",
-      },
-      {
-        property: "og:title",
-        content: "PDF to Image Converter - Free & Online",
-      },
-      {
-        property: "og:description",
-        content: "Convert PDF pages to high-quality images. Works offline, no uploads. Fast and secure.",
-      },
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `${BASE_URL}/pdf-to-image`
-      }
-    ]
-  }),
+  head: () => generateMetaFromKey('pdfToImage'),
 })
 
 function PdfToImagePage() {
@@ -45,7 +21,7 @@ function PdfToImagePage() {
       <div className="max-w-6xl mx-auto">
         <PageHeader
           title="Convert PDF to Image"
-          subtitle="Convert PDF pages to high-quality images with no uploads. Works offline, fast, and secure."
+          subtitle="Convert PDF pages to high-quality images with no uploads. Fully local processing, fast, and secure."
         />
 
         <PdfToImageProvider>

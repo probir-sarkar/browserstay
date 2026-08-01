@@ -27,6 +27,9 @@ export function Navbar() {
         <Link to="/" className="flex items-center space-x-2 font-bold text-xl text-primary mr-8">
           <Layers className="w-6 h-6" />
           <span className="text-foreground">{SITE_CONFIG.name}</span>
+          <span className="hidden lg:inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+            100% private
+          </span>
         </Link>
 
         {/* Desktop Navigation */}

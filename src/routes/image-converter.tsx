@@ -4,35 +4,11 @@ import { HowItWorks } from "@/shared/components/layout/how-it-works"
 import { FAQSection } from "@/shared/components/layout/faq-section"
 import { ImageConverter } from "@/features/image-converter/image-converter"
 import { ImageConverterProvider } from "@/features/image-converter/context"
-import { BASE_URL } from "@/lib/seo"
+import { generateMetaFromKey } from "@/lib/seo"
 
 export const Route = createFileRoute('/image-converter')({
   component: ImageConverterPage,
-  head: () => ({
-    meta: [
-      {
-        title: "Image Converter - Convert Images Online Free | Toolbox",
-      },
-      {
-        name: "description",
-        content: "Convert images between JPG, PNG, WebP, and AVIF. High-quality WebAssembly encoding, batch processing. 100% free, private, and works offline.",
-      },
-      {
-        property: "og:title",
-        content: "Image Converter - Free Online",
-      },
-      {
-        property: "og:description",
-        content: "Convert images between formats. 100% free and works offline.",
-      },
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `${BASE_URL}/image-converter`
-      }
-    ]
-  }),
+  head: () => generateMetaFromKey('imageConverter'),
 })
 
 function ImageConverterPage() {
@@ -76,7 +52,7 @@ function ImageConverterPage() {
             items={[
               {
                 question: "Is it really offline?",
-                answer: "Yes. All image processing happens in your browser using WebAssembly. Your photos are never uploaded to any server."
+                answer: "Processing is 100% local. All image encoding happens in your browser using WebAssembly, and your photos are never uploaded to any server. An internet connection is needed to load the page, but your files never leave your device."
               },
               {
                 question: "What formats are supported?",

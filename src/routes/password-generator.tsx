@@ -3,35 +3,11 @@ import { PageHeader } from "@/shared/components/layout/page-header"
 import { HowItWorks } from "@/shared/components/layout/how-it-works"
 import { FAQSection } from "@/shared/components/layout/faq-section"
 import { PasswordGenerator } from "@/features/password-generator/components/password-generator"
-import { BASE_URL } from "@/lib/seo"
+import { generateMetaFromKey } from "@/lib/seo"
 
 export const Route = createFileRoute('/password-generator')({
   component: PasswordGeneratorPage,
-  head: () => ({
-    meta: [
-      {
-        title: "Secure Password Generator - Free Online Tool | Toolbox",
-      },
-      {
-        name: "description",
-        content: "Generate strong, secure passwords instantly in your browser. Customizable length, character types, and options. 100% offline, no data stored.",
-      },
-      {
-        property: "og:title",
-        content: "Secure Password Generator - Free Online",
-      },
-      {
-        property: "og:description",
-        content: "Generate strong, secure passwords instantly. Works offline, no data stored.",
-      },
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `${BASE_URL}/password-generator`
-      }
-    ]
-  }),
+  head: () => generateMetaFromKey('passwordGenerator'),
 })
 
 function PasswordGeneratorPage() {
@@ -40,7 +16,7 @@ function PasswordGeneratorPage() {
       <div className="max-w-6xl mx-auto space-y-12">
         <PageHeader
           title="Secure Password Generator"
-          subtitle="Create strong, uncrackable passwords instantly in your browser. No internet connection required."
+          subtitle="Create strong, uncrackable passwords instantly in your browser. Generated locally, never sent anywhere."
         />
 
         <div className="w-full max-w-3xl mx-auto">

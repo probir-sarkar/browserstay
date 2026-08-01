@@ -4,7 +4,7 @@ import { PageHeader } from "@/shared/components/layout/page-header"
 import { HowItWorks } from "@/shared/components/layout/how-it-works"
 import { FAQSection } from "@/shared/components/layout/faq-section"
 import { ImageToPdfProvider } from "@/features/image-to-pdf/context"
-import { BASE_URL } from "@/lib/seo"
+import { generateMetaFromKey } from "@/lib/seo"
 
 const imageToPdfFaqItems = [
   {
@@ -27,31 +27,7 @@ const imageToPdfFaqItems = [
 
 export const Route = createFileRoute('/image-to-pdf')({
   component: ImageToPdfPage,
-  head: () => ({
-    meta: [
-      {
-        title: "Image to PDF Converter - Convert Images to PDF Free | Toolbox",
-      },
-      {
-        name: "description",
-        content: "Convert images (JPG, PNG, WebP) to PDF documents. Sortable pages, custom settings, 100% offline. Free and secure image to PDF converter.",
-      },
-      {
-        property: "og:title",
-        content: "Image to PDF Converter - Free",
-      },
-      {
-        property: "og:description",
-        content: "Convert images to PDF documents. Custom settings, 100% offline.",
-      },
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `${BASE_URL}/image-to-pdf`
-      }
-    ]
-  }),
+  head: () => generateMetaFromKey('imageToPdf'),
 })
 
 function ImageToPdfPage() {
@@ -60,7 +36,7 @@ function ImageToPdfPage() {
       <div className="max-w-6xl mx-auto">
         <PageHeader
           title="Image to PDF Converter"
-          subtitle="Turn your images into a single PDF document. Sortable pages, custom settings, and 100% offline."
+          subtitle="Turn your images into a single PDF document. Sortable pages, custom settings, and fully local processing."
         />
 
         <div className="mb-24">

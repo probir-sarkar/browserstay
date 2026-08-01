@@ -4,7 +4,9 @@
 - Prefers centralized, worker-offloaded processing over main-thread implementations — moves resize into the shared Web Worker to avoid blocking the UI thread. Confidence: 0.8
 - Prefers consistent UX across similar features (e.g., single-file download vs. auto-zip for multiple files should match the compressor pattern). Confidence: 0.7
 - Wants type-null-safety properly handled (e.g., checking `null` return from `decodeAvif` instead of passing through unchecked). Confidence: 0.7
-- Prefers removing or fixing inaccurate documentation/comments rather than leaving misleading ones. Confidence: 0.7
+- Prefers removing or fixing inaccurate documentation/comments rather than leaving misleading ones — explicitly asks for docs (e.g., README) to be updated to match the actual project state (real tooling, commands, structure, tech stack) instead of stale content. Confidence: 0.85
 - Values clear feature differentiation — features should have distinct, meaningful identities and real technical differences (e.g., actual compression techniques vs. just different quality defaults), not just cosmetic differences like naming or default settings. Confidence: 0.7
 - Prefers using Bun as the project runtime/toolchain over npm or other Node.js runtimes. Confidence: 0.9
 - Values keeping dependencies up to date — proactively requests updating libraries (e.g., @base-ui/react, shadcn) to their latest versions rather than staying on older releases. Confidence: 0.8
+- Expects completed work to be committed and pushed to git (commit + push) rather than left uncommitted in the working tree — issues terse "commit and push" instructions after each task, with no further detail needed. Confidence: 0.9
+- Treats pasted PR review comment links (e.g., Greptile bot reviews) as actionable tasks: expects the review to be fetched, the flagged issues implemented across all affected files, and the result verified (build + rendered output) before reporting back. Confidence: 0.85

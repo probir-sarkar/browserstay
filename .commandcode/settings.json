@@ -5,7 +5,12 @@
       "Shell(bun:*)",
       "Shell(npx -p typescript tsc --noEmit 2 >& 1)",
       "Shell(npx tsc --noEmit 2 >& 1)",
-      "Shell(npm:*)"
+      "Shell(npm:*)",
+      "Shell(node -e \"console.log(process.version)\")",
+      "powershell",
+      "Shell(bun run build > build.log 2>&1; echo \"EXIT=$?\"; grep -iE \"error TS|error:\" build.log | head -20; echo \"done\")",
+      "Shell(git:*)",
+      "Shell(bun run build > build.log 2>&1 echo \"EXIT=$?\" type build.log | findstr /i \"error\" && echo \"FOUND_ERRORS\" || echo \"NO_ERRORS\")"
     ],
     "deny": [],
     "defaultMode": "default"
