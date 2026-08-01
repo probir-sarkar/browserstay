@@ -7,3 +7,4 @@
 - Values a distinct, brandable product name with a matching available `.com` domain over a generic existing name, for SEO winnability. Confidence: 0.8
 - Cares about SEO infrastructure correctness: sitemap/robots/canonical/OG URLs pointing at the real production domain, a real og-image, and structured data (JSON-LD). Confidence: 0.7
 - Removes off-brand content (e.g., partner/promo banners like "Quiz Zone") from marketing pages because it undermines trust for a privacy-focused brand. Confidence: 0.6
+- Wants visual/brand assets (e.g., the OG image) to use the brand theme color (#1db6a5 teal) so marketing materials match the site's color scheme instead of arbitrary placeholder colors. Confidence: 0.7

@@ -12,7 +12,7 @@ Your files never leave your PC. BrowserStay runs every tool entirely in your bro
 
 Most "free" online tools secretly upload your files to their servers. BrowserStay is different:
 
-- **100% private** — Files are processed locally with WebAssembly in a Web Worker. Nothing is ever uploaded — not to the EU, the US, China, or anywhere else. There are no servers to leak your data.
+- **100% private** — Files are processed locally with WebAssembly inside a Web Worker. Nothing is ever uploaded — not to the EU, the US, China, or anywhere else. There are no servers to leak your data.
 - **Open source** — Every line of code is public under the Apache 2.0 license. Auditable, forever free, and yours.
 - **Works offline** — Once the page loads, no internet is needed. Your data stays on your device.
 - **Free, no limits** — No account, no watermark, no file-size caps, no premium paywall.
@@ -36,16 +36,20 @@ Most "free" online tools secretly upload your files to their servers. BrowserSta
 
 ## Tech Stack
 
-- **Frontend**: React 19, Vite, TypeScript, TanStack Router
-- **Processing**: WebAssembly codecs (via `@jsquash/*`), Web Workers + Comlink
-- **Styling**: Tailwind CSS v4, shadcn-style components
+- **Frontend**: React 19, Vite, TypeScript
+- **Routing**: TanStack Router & React Start
+- **Processing**: WebAssembly codecs (via `@jsquash/*`), Web Workers + Comlink, PDF.js, pdf-lib, jsPDF
+- **State**: Immer (`use-immer`)
+- **Styling**: Tailwind CSS v4, class-variance-authority
+- **UI Components**: Base UI / shadcn-style components
+- **Tests**: Vitest with Playwright browser runner
 - **Deployment**: Cloudflare Workers
 
 ## Getting Started
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) or [pnpm](https://pnpm.io)
+- [Bun](https://bun.sh) (the project is managed with `bun.lock`)
 
 ### Installation
 
@@ -67,18 +71,51 @@ The application will be available at `http://localhost:3000`.
 bun run build
 ```
 
+Builds the production bundle with Vite, then type-checks with `tsc --noEmit`. The build also prerenders all routes and generates `sitemap.xml`.
+
+### Test
+
+```bash
+bun run test
+```
+
+Runs the Vitest suite with the Playwright browser runner (headless Chromium).
+
 ### Deployment
 
 ```bash
 bun run deploy
 ```
 
+Builds and deploys to Cloudflare Workers (`wrangler deploy`). The production site is served from `https://browserstay.com`.
+
 ## Project Structure
 
-- **Source Code**: Located in `src/` directory
-- **Configuration**: Vite config for build setup
-- **Workers**: Cloudflare Workers configuration for deployment
-- **Types**: Auto-generated Cloudflare types in `worker-configuration.d.ts`
+```
+src/
+├── config/          # Site + tool definitions (branding, tools, links)
+├── features/        # Feature modules (one per tool: image-converter, merge-pdf, ...)
+│   ├── <tool>/
+│   │   ├── components/   # Tool-specific UI components
+│   │   ├── context.tsx   # Feature state provider
+│   │   └── ...
+├── lib/             # Shared library code (e.g. SEO meta config)
+├── routes/          # TanStack Router file-based routes (one per tool page)
+├── shared/
+│   ├── components/  # Shared UI: layout (navbar, footer), common components
+│   ├── hooks/       # Shared React hooks
+│   ├── services/    # Worker-based services (image, pdf, zip, file, download)
+│   ├── types/       # Shared TypeScript types
+│   └── utils/       # Shared utilities
+└── styles/          # Global CSS (Tailwind)
+```
+
+### Key files
+
+- `src/lib/seo.ts` — Centralized SEO metadata (titles, descriptions, keywords, canonical URLs) for every route.
+- `src/shared/services/image/` — Web Worker + Comlink image processing (encode, resize, compress) using `@jsquash/*` WebAssembly codecs.
+- `src/shared/services/zip/` — ZIP generation for batch downloads.
+- `wrangler.jsonc` — Cloudflare Workers deployment config (custom domain: `browserstay.com`).
 
 ## License
 
