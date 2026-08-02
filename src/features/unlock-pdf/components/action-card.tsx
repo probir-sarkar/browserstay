@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { AlertCircle, Lock } from "lucide-react";
 import { useUnlockPdfContext } from "../context";
 import { unlockPdf } from "../services/unlock-pdf";
@@ -9,8 +8,8 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 
 export function UnlockActionCard() {
-  const { fileData, isProcessing, setIsProcessing, error, setError, reset } = useUnlockPdfContext();
-  const [password, setPassword] = useState("");
+  const { fileData, password, setPassword, isProcessing, setIsProcessing, error, setError, reset } =
+    useUnlockPdfContext();
   const { downloadFile } = useDownload();
 
   const handleUnlock = async () => {

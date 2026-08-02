@@ -3,7 +3,6 @@ import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { useMergePdfContext } from "../context";
 import { Loader2, Download } from "lucide-react";
-import { PDFDocument } from "@cantoo/pdf-lib";
 
 export function MergeActionCard() {
   const { files, settings, isMerging, setIsMerging, setError } = useMergePdfContext();
@@ -22,6 +21,7 @@ export function MergeActionCard() {
 
     try {
       // Dynamic import to reduce initial bundle size
+      const { PDFDocument } = await import("@cantoo/pdf-lib");
 
       const mergedPdf = await PDFDocument.create();
 

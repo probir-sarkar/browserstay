@@ -4,9 +4,11 @@ import { useProcessingState } from "@/shared/hooks";
 
 interface UnlockPdfContextValue {
   fileData: UnlockPdfFile | null;
+  password: string;
   isProcessing: boolean;
   error: string | null;
   setFile: (file: UnlockPdfFile | null) => void;
+  setPassword: (password: string) => void;
   setIsProcessing: (isProcessing: boolean) => void;
   setError: (error: string | null) => void;
   reset: () => void;
@@ -16,10 +18,12 @@ const UnlockPdfContext = createContext<UnlockPdfContextValue | null>(null);
 
 export function UnlockPdfProvider({ children }: { children: ReactNode }) {
   const [fileData, setFileData] = useState<UnlockPdfFile | null>(null);
+  const [password, setPasswordState] = useState("");
   const processingState = useProcessingState();
 
   const setFile = (file: UnlockPdfFile | null) => {
     setFileData(file);
+    setPasswordState("");
     processingState.setError(null);
   };
 
@@ -29,15 +33,18 @@ export function UnlockPdfProvider({ children }: { children: ReactNode }) {
 
   const reset = () => {
     setFileData(null);
+    setPasswordState("");
     processingState.setError(null);
     processingState.setIsProcessing(false);
   };
 
   const value: UnlockPdfContextValue = {
     fileData,
+    password,
     isProcessing: processingState.isProcessing,
     error: processingState.error,
     setFile,
+    setPassword: setPasswordState,
     setIsProcessing: processingState.setIsProcessing,
     setError,
     reset,
