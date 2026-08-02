@@ -21,7 +21,8 @@ export function MergeActionCard() {
 
     try {
       // Dynamic import to reduce initial bundle size
-      const { PDFDocument } = await import('pdf-lib');
+      const { PDFDocument } = await import("@cantoo/pdf-lib");
+
       const mergedPdf = await PDFDocument.create();
 
       for (const pdfFile of files) {

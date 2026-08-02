@@ -1,7 +1,7 @@
 import { openPdf } from "clawpdf/browser";
 import { createZip } from "../zip";
 import pLimit from "p-limit";
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument } from "@cantoo/pdf-lib";
 import { getBaseName } from "../file";
 
 

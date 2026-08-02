@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as EncryptPdfRouteImport } from './routes/encrypt-pdf'
 import { Route as ImageCompressorRouteImport } from './routes/image-compressor'
 import { Route as ImageConverterRouteImport } from './routes/image-converter'
 import { Route as ImageResizeRouteImport } from './routes/image-resize'
@@ -23,6 +24,7 @@ import { Route as PdfToolsRouteImport } from './routes/pdf-tools'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as QrGeneratorRouteImport } from './routes/qr-generator'
 import { Route as SplitPdfRouteImport } from './routes/split-pdf'
+import { Route as UnlockPdfRouteImport } from './routes/unlock-pdf'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -32,6 +34,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EncryptPdfRoute = EncryptPdfRouteImport.update({
+  id: '/encrypt-pdf',
+  path: '/encrypt-pdf',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ImageCompressorRoute = ImageCompressorRouteImport.update({
@@ -94,10 +101,16 @@ const SplitPdfRoute = SplitPdfRouteImport.update({
   path: '/split-pdf',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UnlockPdfRoute = UnlockPdfRouteImport.update({
+  id: '/unlock-pdf',
+  path: '/unlock-pdf',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/encrypt-pdf': typeof EncryptPdfRoute
   '/image-compressor': typeof ImageCompressorRoute
   '/image-converter': typeof ImageConverterRoute
   '/image-resize': typeof ImageResizeRoute
@@ -110,10 +123,12 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/qr-generator': typeof QrGeneratorRoute
   '/split-pdf': typeof SplitPdfRoute
+  '/unlock-pdf': typeof UnlockPdfRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/encrypt-pdf': typeof EncryptPdfRoute
   '/image-compressor': typeof ImageCompressorRoute
   '/image-converter': typeof ImageConverterRoute
   '/image-resize': typeof ImageResizeRoute
@@ -126,11 +141,13 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/qr-generator': typeof QrGeneratorRoute
   '/split-pdf': typeof SplitPdfRoute
+  '/unlock-pdf': typeof UnlockPdfRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/encrypt-pdf': typeof EncryptPdfRoute
   '/image-compressor': typeof ImageCompressorRoute
   '/image-converter': typeof ImageConverterRoute
   '/image-resize': typeof ImageResizeRoute
@@ -143,12 +160,14 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/qr-generator': typeof QrGeneratorRoute
   '/split-pdf': typeof SplitPdfRoute
+  '/unlock-pdf': typeof UnlockPdfRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/encrypt-pdf'
     | '/image-compressor'
     | '/image-converter'
     | '/image-resize'
@@ -161,10 +180,12 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/qr-generator'
     | '/split-pdf'
+    | '/unlock-pdf'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/encrypt-pdf'
     | '/image-compressor'
     | '/image-converter'
     | '/image-resize'
@@ -177,10 +198,12 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/qr-generator'
     | '/split-pdf'
+    | '/unlock-pdf'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/encrypt-pdf'
     | '/image-compressor'
     | '/image-converter'
     | '/image-resize'
@@ -193,11 +216,13 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/qr-generator'
     | '/split-pdf'
+    | '/unlock-pdf'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  EncryptPdfRoute: typeof EncryptPdfRoute
   ImageCompressorRoute: typeof ImageCompressorRoute
   ImageConverterRoute: typeof ImageConverterRoute
   ImageResizeRoute: typeof ImageResizeRoute
@@ -210,6 +235,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   QrGeneratorRoute: typeof QrGeneratorRoute
   SplitPdfRoute: typeof SplitPdfRoute
+  UnlockPdfRoute: typeof UnlockPdfRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -226,6 +252,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/encrypt-pdf': {
+      id: '/encrypt-pdf'
+      path: '/encrypt-pdf'
+      fullPath: '/encrypt-pdf'
+      preLoaderRoute: typeof EncryptPdfRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/image-compressor': {
@@ -312,12 +345,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplitPdfRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/unlock-pdf': {
+      id: '/unlock-pdf'
+      path: '/unlock-pdf'
+      fullPath: '/unlock-pdf'
+      preLoaderRoute: typeof UnlockPdfRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  EncryptPdfRoute: EncryptPdfRoute,
   ImageCompressorRoute: ImageCompressorRoute,
   ImageConverterRoute: ImageConverterRoute,
   ImageResizeRoute: ImageResizeRoute,
@@ -330,6 +371,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   QrGeneratorRoute: QrGeneratorRoute,
   SplitPdfRoute: SplitPdfRoute,
+  UnlockPdfRoute: UnlockPdfRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -103,6 +103,20 @@ export const metaConfigs = {
     canonicalUrl: `${BASE_URL}/split-pdf`,
     keywords: "split pdf, extract pages from pdf, split pdf online, pdf page extractor, local split pdf, browserstay"
   },
+  unlockPdf: {
+    title: "Unlock PDF - Remove Password Free Online | BrowserStay",
+    description:
+      "Remove password protection from PDFs for free. Unlock your PDF instantly — the password and file are processed entirely in your browser, never uploaded, 100% private.",
+    canonicalUrl: `${BASE_URL}/unlock-pdf`,
+    keywords: "unlock pdf, remove pdf password, pdf password remover, decrypt pdf, unlock pdf online, local pdf unlock, browserstay"
+  },
+  encryptPdf: {
+    title: "Encrypt PDF - Password Protect PDF Free Online | BrowserStay",
+    description:
+      "Protect your PDF with a password for free. Encrypt your PDF instantly — everything happens in your browser, never uploaded, 100% private.",
+    canonicalUrl: `${BASE_URL}/encrypt-pdf`,
+    keywords: "encrypt pdf, password protect pdf, add password to pdf, protect pdf, pdf encryption, local pdf encrypt, browserstay"
+  },
   imageConverter: {
     title: "Image Converter - Convert Images Online Free | BrowserStay",
     description:
