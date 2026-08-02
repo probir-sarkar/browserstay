@@ -48,7 +48,7 @@ export function Footer() {
                                 className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 <Coffee className="w-5 h-5" />
-                                Sponsor
+                                Support
                             </a>
                         </div>
                     </div>
