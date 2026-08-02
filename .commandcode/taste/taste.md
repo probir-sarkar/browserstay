@@ -1,4 +1,5 @@
 - Values clean code: prefers removing dead/unused code, inaccurate comments, and unnecessary complexity in a single pass. Confidence: 0.9
+- Prefers a simple light/dark theme toggle (a single button that flips between the two) over a dropdown with Light/Dark/System options — explicitly requested "no dropdown only light and dark toggle"; keeps theme UI minimal with no system/auto option. Confidence: 0.8
 - Prevents code duplication — notices when separate modules share nearly identical scaffolding and questions whether they should be consolidated. Confidence: 0.7
 - Prefers fixing bugs (especially logic bugs like missing `return` statements) at the same time as doing related refactoring work. Confidence: 0.8
 - Prefers centralized, worker-offloaded processing over main-thread implementations — moves resize into the shared Web Worker to avoid blocking the UI thread. Confidence: 0.8
