@@ -4,7 +4,6 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { cloudflare } from "@cloudflare/vite-plugin";
-import { nitro } from "nitro/vite";
 
 export default defineConfig({
   resolve: {
@@ -17,8 +16,7 @@ export default defineConfig({
     exclude: ["@jsquash/png", "@jsquash/avif", "@jsquash/jpeg", "@jsquash/webp"]
   },
   plugins: [
-    // cloudflare({ viteEnvironment: { name: "ssr" } }),
-    nitro(),
+    cloudflare({ viteEnvironment: { name: "ssr" } }),
     tailwindcss(),
     tanstackStart({
       srcDirectory: "./src",
