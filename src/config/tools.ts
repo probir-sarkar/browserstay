@@ -64,6 +64,14 @@ export const TOOLS_CONFIG: ToolCategory[] = [
         icon: Lock,
         color: "bg-red-500/10 text-red-600",
         tags: ["PDF", "Security", "New"]
+      },
+      {
+        title: "Encrypt PDF",
+        href: "/encrypt-pdf",
+        description: "Protect your PDF with a password.",
+        icon: Lock,
+        color: "bg-green-500/10 text-green-600",
+        tags: ["PDF", "Security", "New"]
       }
     ]
   },

@@ -1,21 +1,26 @@
 import { useState } from "react";
 import { AlertCircle, Lock } from "lucide-react";
-import { useUnlockPdfContext } from "../context";
-import { unlockPdf } from "../services/unlock-pdf";
+import { useEncryptPdfContext } from "../context";
+import { encryptPdf } from "../services/encrypt-pdf";
 import { useDownload } from "@/shared/hooks";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 
-export function UnlockActionCard() {
-  const { fileData, isProcessing, setIsProcessing, error, setError, reset } = useUnlockPdfContext();
+export function EncryptActionCard() {
+  const { fileData, isProcessing, setIsProcessing, error, setError, reset } = useEncryptPdfContext();
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const { downloadFile } = useDownload();
 
-  const handleUnlock = async () => {
+  const handleEncrypt = async () => {
     if (!fileData || !password) {
-      setError(password ? "Please select a PDF file first." : "Please enter the PDF password.");
+      setError(password ? "Please select a PDF file first." : "Please enter a password.");
+      return;
+    }
+    if (password !== confirm) {
+      setError("Passwords do not match.");
       return;
     }
 
@@ -23,40 +28,57 @@ export function UnlockActionCard() {
     setError(null);
 
     try {
-      const result = await unlockPdf(fileData.file, password);
+      const result = await encryptPdf(fileData.file, password);
       downloadFile(result.blob, { filename: result.fileName });
       reset();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to unlock the PDF.");
+      setError(err instanceof Error ? err.message : "Failed to encrypt the PDF.");
     } finally {
       setIsProcessing(false);
     }
   };
 
+  const clearErrorOnType = () => {
+    if (error) setError(null);
+  };
+
   return (
     <Card className="flex flex-col">
       <CardHeader>
-        <CardTitle>Unlock PDF</CardTitle>
+        <CardTitle>Protect PDF</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 space-y-4">
         <p className="text-sm text-muted-foreground">
           {fileData
-            ? `Enter the password for "${fileData.fileName}.pdf" to remove its protection.`
-            : "Select a password-protected PDF to get started."}
+            ? `Set a password for "${fileData.fileName}.pdf" to protect it.`
+            : "Select a PDF to protect with a password."}
         </p>
         <div className="space-y-2">
           <Label htmlFor="pdf-password">Password</Label>
           <Input
             id="pdf-password"
             type="password"
-            placeholder="Enter PDF password"
+            placeholder="Enter password"
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
-              if (error) setError(null);
+              clearErrorOnType();
+            }}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="pdf-confirm">Confirm Password</Label>
+          <Input
+            id="pdf-confirm"
+            type="password"
+            placeholder="Re-enter password"
+            value={confirm}
+            onChange={(e) => {
+              setConfirm(e.target.value);
+              clearErrorOnType();
             }}
             onKeyDown={(e) => {
-              if (e.key === "Enter") handleUnlock();
+              if (e.key === "Enter") handleEncrypt();
             }}
           />
           {error && (
@@ -68,8 +90,8 @@ export function UnlockActionCard() {
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full" size="lg" onClick={handleUnlock} disabled={!fileData || isProcessing}>
-          {isProcessing ? "Unlocking..." : "Unlock PDF"}
+        <Button className="w-full" size="lg" onClick={handleEncrypt} disabled={!fileData || isProcessing}>
+          {isProcessing ? "Encrypting..." : "Encrypt PDF"}
         </Button>
       </CardFooter>
     </Card>

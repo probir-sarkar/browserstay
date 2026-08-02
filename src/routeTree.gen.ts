@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as EncryptPdfRouteImport } from './routes/encrypt-pdf'
 import { Route as ImageCompressorRouteImport } from './routes/image-compressor'
 import { Route as ImageConverterRouteImport } from './routes/image-converter'
 import { Route as ImageResizeRouteImport } from './routes/image-resize'
@@ -33,6 +34,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EncryptPdfRoute = EncryptPdfRouteImport.update({
+  id: '/encrypt-pdf',
+  path: '/encrypt-pdf',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ImageCompressorRoute = ImageCompressorRouteImport.update({
@@ -104,6 +110,7 @@ const UnlockPdfRoute = UnlockPdfRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/encrypt-pdf': typeof EncryptPdfRoute
   '/image-compressor': typeof ImageCompressorRoute
   '/image-converter': typeof ImageConverterRoute
   '/image-resize': typeof ImageResizeRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/encrypt-pdf': typeof EncryptPdfRoute
   '/image-compressor': typeof ImageCompressorRoute
   '/image-converter': typeof ImageConverterRoute
   '/image-resize': typeof ImageResizeRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/encrypt-pdf': typeof EncryptPdfRoute
   '/image-compressor': typeof ImageCompressorRoute
   '/image-converter': typeof ImageConverterRoute
   '/image-resize': typeof ImageResizeRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/encrypt-pdf'
     | '/image-compressor'
     | '/image-converter'
     | '/image-resize'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/encrypt-pdf'
     | '/image-compressor'
     | '/image-converter'
     | '/image-resize'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/encrypt-pdf'
     | '/image-compressor'
     | '/image-converter'
     | '/image-resize'
@@ -210,6 +222,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  EncryptPdfRoute: typeof EncryptPdfRoute
   ImageCompressorRoute: typeof ImageCompressorRoute
   ImageConverterRoute: typeof ImageConverterRoute
   ImageResizeRoute: typeof ImageResizeRoute
@@ -239,6 +252,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/encrypt-pdf': {
+      id: '/encrypt-pdf'
+      path: '/encrypt-pdf'
+      fullPath: '/encrypt-pdf'
+      preLoaderRoute: typeof EncryptPdfRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/image-compressor': {
@@ -338,6 +358,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  EncryptPdfRoute: EncryptPdfRoute,
   ImageCompressorRoute: ImageCompressorRoute,
   ImageConverterRoute: ImageConverterRoute,
   ImageResizeRoute: ImageResizeRoute,

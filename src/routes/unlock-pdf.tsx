@@ -2,7 +2,7 @@ import { createFileRoute, ClientOnly } from "@tanstack/react-router";
 import { PageHeader } from "@/shared/components/layout/page-header";
 import { HowItWorks } from "@/shared/components/layout/how-it-works";
 import { FAQSection } from "@/shared/components/layout/faq-section";
-import { UnlockPdfProvider, UnlockPdfDropZone, UnlockFileDetails, UnlockActionCard, UnlockError } from "@/features/unlock-pdf";
+import { UnlockPdfProvider, UnlockPdfDropZone, UnlockFileDetails, UnlockActionCard } from "@/features/unlock-pdf";
 import { generateMetaFromKey } from "@/lib/seo";
 
 const unlockPdfFaqItems = [
@@ -42,7 +42,6 @@ function UnlockPdfPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-24">
             <div className="lg:col-span-2 space-y-6">
               <ClientOnly fallback={<div className="h-64 bg-muted animate-pulse rounded-lg" />}>
-                <UnlockError />
                 <UnlockFileDetails />
                 <UnlockPdfDropZone />
               </ClientOnly>
