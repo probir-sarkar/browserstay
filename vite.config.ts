@@ -17,8 +17,8 @@ export default defineConfig({
     exclude: ["@jsquash/png", "@jsquash/avif", "@jsquash/jpeg", "@jsquash/webp"]
   },
   plugins: [
-    cloudflare({ viteEnvironment: { name: "ssr" } }),
-    // nitro(),
+    // cloudflare({ viteEnvironment: { name: "ssr" } }),
+    nitro(),
     tailwindcss(),
     tanstackStart({
       srcDirectory: "./src",

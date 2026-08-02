@@ -1,76 +1,103 @@
-import { Layers, Heart } from "lucide-react";
+import { Layers, Heart, Coffee, ShieldCheck } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { GithubIcon } from "@/shared/components/common";
+import { SITE_CONFIG } from "@/config/site";
+import { ALL_TOOLS } from "@/config/tools";
+
+const projectLinks = [
+  { label: "Home", to: "/" },
+  { label: "About", to: "/about" },
+  { label: "Privacy", to: "/privacy" }
+];
 
 export function Footer() {
     return (
-        <footer className="border-t border-border bg-background pt-16 pb-8">
-            <div className="container mx-auto px-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
-                    <div className="md:col-span-2 space-y-4">
+        <footer className="border-t border-border bg-background">
+            <div className="container mx-auto px-6 py-16">
+                <div className="grid grid-cols-2 gap-10 lg:grid-cols-12 lg:gap-8">
+                    {/* Brand */}
+                    <div className="col-span-2 lg:col-span-5 space-y-5">
                         <Link to="/" className="flex items-center space-x-2 font-bold text-xl text-foreground">
                             <Layers className="w-6 h-6 text-primary" />
                             <span>BrowserStay.</span>
                         </Link>
-                        <p className="text-muted-foreground text-sm leading-relaxed max-w-sm">
+                        <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary w-fit">
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                            No uploads. No accounts. No servers.
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
                             Free, private, open-source utilities that stay in your browser.
                             Your files never leave your PC — no uploads, no servers, anywhere.
                         </p>
-                        <div className="flex items-center gap-4 pt-4">
+                        <div className="flex items-center gap-6 pt-1">
                             <a
-                                href="https://github.com/probir-sarkar/browserstay"
+                                href={SITE_CONFIG.links.github}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-2 rounded-full bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-colors"
                                 aria-label="GitHub Repository"
+                                className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 <GithubIcon className="w-5 h-5" />
+                                GitHub
+                            </a>
+                            <a
+                                href={SITE_CONFIG.links.sponsor}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Support the project"
+                                className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                <Coffee className="w-5 h-5" />
+                                Support
                             </a>
                         </div>
                     </div>
 
-                    <div>
+                    {/* Tools */}
+                    <div className="lg:col-span-4">
                         <h4 className="font-semibold text-foreground mb-6">Tools</h4>
-                        <ul className="space-y-3 text-sm text-muted-foreground">
-                            <li>
-                                <Link to="/pdf-to-image" className="hover:text-primary transition-colors">PDF to Image</Link>
-                            </li>
-                            <li>
-                                <Link to="/image-converter" className="hover:text-primary transition-colors">Image Converter</Link>
-                            </li>
-                            <li>
-                                <Link to="/pdf-tools" className="hover:text-primary transition-colors">Merge PDF</Link>
-                            </li>
-                            <li>
-                                <Link to="/image-tools" className="hover:text-primary transition-colors">Resize Image</Link>
-                            </li>
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm text-muted-foreground">
+                            {ALL_TOOLS.filter((tool) => !tool.disabled).map((tool) => (
+                                <li key={tool.href}>
+                                    <Link to={tool.href} className="hover:text-primary transition-colors">
+                                        {tool.title}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
-                    <div>
+                    {/* Project */}
+                    <div className="lg:col-span-3">
                         <h4 className="font-semibold text-foreground mb-6">Project</h4>
                         <ul className="space-y-3 text-sm text-muted-foreground">
+                            {projectLinks.map((link) => (
+                                <li key={link.to}>
+                                    <Link to={link.to} className="hover:text-primary transition-colors">
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
                             <li>
-                                <Link to="/" className="hover:text-primary transition-colors">Home</Link>
-                            </li>
-                            <li>
-                                <Link to="/about" className="hover:text-primary transition-colors">About</Link>
-                            </li>
-                            <li>
-                                <Link to="/privacy" className="hover:text-primary transition-colors">Privacy</Link>
-                            </li>
-                            <li>
-                                <Link to="/" className="hover:text-primary transition-colors">Open Source</Link>
+                                <a
+                                    href={SITE_CONFIG.links.issues}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:text-primary transition-colors"
+                                >
+                                    Report an issue
+                                </a>
                             </li>
                         </ul>
                     </div>
                 </div>
 
-                <div className="border-t border-border pt-8 grid grid-cols-1 md:grid-cols-2 gap-4 items-center text-center md:text-left">
+                {/* Bottom bar */}
+                <div className="mt-14 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-sm text-muted-foreground">
-                        © {new Date().getFullYear()} BrowserStay. Open source.
+                        © {new Date().getFullYear()} BrowserStay. Open source under Apache 2.0.
                     </p>
-                    <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+                    <p className="text-sm text-muted-foreground flex items-center gap-1.5">
                         Made with <Heart className="w-4 h-4 text-primary fill-primary" /> — private by design, open by default.
                     </p>
                 </div>
