@@ -1,14 +1,14 @@
 import * as Comlink from "comlink";
-import { encode as encodeJpeg, decode as decodeJpeg } from "@jsquash/jpeg";
-import { encode as encodeWebp, decode as decodeWebp } from "@jsquash/webp";
-import { encode as encodePng, decode as decodePng } from "@jsquash/png";
-import { encode as encodeAvif, decode as decodeAvif } from "@jsquash/avif";
+import { encode as encodeJpeg, decode as decodeJpeg } from "https://esm.sh/@jsquash/jpeg@1.6.0";
+import { encode as encodeWebp, decode as decodeWebp } from "https://esm.sh/@jsquash/webp@1.5.0";
+import { encode as encodePng, decode as decodePng } from "https://esm.sh/@jsquash/png@3.1.1";
+import { encode as encodeAvif, decode as decodeAvif } from "https://esm.sh/@jsquash/avif@2.1.1";
 import type {
   EncodeImageOptions,
   ResizeWorkerOptions,
   CompressImageOptions,
   ImageFormat,
-  ImageTransparencyInfo,
+  ImageTransparencyInfo
 } from "./types";
 
 export interface EncodeImageResult {
@@ -50,7 +50,10 @@ async function decodeToImageData(file: File): Promise<ImageData> {
   }
 }
 
-async function encodeImageData(imageData: ImageData, options: EncodeImageOptions | ResizeWorkerOptions): Promise<ArrayBuffer> {
+async function encodeImageData(
+  imageData: ImageData,
+  options: EncodeImageOptions | ResizeWorkerOptions
+): Promise<ArrayBuffer> {
   const { outputFormat, quality } = options;
   if (quality < 1 || quality > 100) throw new Error("Quality must be between 1 and 100");
   switch (outputFormat) {
@@ -144,14 +147,14 @@ async function compressImageWorker(file: File, options: CompressImageOptions): P
 
   const encoded = await encodeImageData(data, options);
   const outputFile = new File([encoded], file.name, {
-    type: MIME_TYPE[options.outputFormat],
+    type: MIME_TYPE[options.outputFormat]
   });
 
   return {
     outputFile,
     originalSize: file.size,
     outputSize: outputFile.size,
-    ratio: ((file.size - outputFile.size) / file.size) * 100,
+    ratio: ((file.size - outputFile.size) / file.size) * 100
   };
 }
 
@@ -167,7 +170,7 @@ async function checkImageTransparencyWorker(file: File): Promise<ImageTransparen
   const sampleCount = Math.ceil(pixels.length / 4 / step);
   return {
     hasAlpha: alphaCount > 0,
-    alphaPixelPercent: sampleCount > 0 ? (alphaCount / sampleCount) * 100 : 0,
+    alphaPixelPercent: sampleCount > 0 ? (alphaCount / sampleCount) * 100 : 0
   };
 }
 

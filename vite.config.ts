@@ -12,9 +12,6 @@ export default defineConfig({
   server: {
     port: 3000
   },
-  optimizeDeps: {
-    exclude: ["@jsquash/png", "@jsquash/avif", "@jsquash/jpeg", "@jsquash/webp"]
-  },
   plugins: [
     cloudflare({ viteEnvironment: { name: "ssr" } }),
     tailwindcss(),
