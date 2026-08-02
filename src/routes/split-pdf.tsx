@@ -34,7 +34,7 @@ const splitPdfFaqItems = [
   },
   {
     question: "Does it support encrypted PDFs?",
-    answer: "If the PDF is password protected, you will need to decrypt it first. We currently support standard unencrypted PDFs for automatic processing."
+    answer: "If the PDF is password protected, unlock it first with our Unlock PDF tool, then split the decrypted file."
   }
 ];
 

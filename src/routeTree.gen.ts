@@ -23,6 +23,7 @@ import { Route as PdfToolsRouteImport } from './routes/pdf-tools'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as QrGeneratorRouteImport } from './routes/qr-generator'
 import { Route as SplitPdfRouteImport } from './routes/split-pdf'
+import { Route as UnlockPdfRouteImport } from './routes/unlock-pdf'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -94,6 +95,11 @@ const SplitPdfRoute = SplitPdfRouteImport.update({
   path: '/split-pdf',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UnlockPdfRoute = UnlockPdfRouteImport.update({
+  id: '/unlock-pdf',
+  path: '/unlock-pdf',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/qr-generator': typeof QrGeneratorRoute
   '/split-pdf': typeof SplitPdfRoute
+  '/unlock-pdf': typeof UnlockPdfRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/qr-generator': typeof QrGeneratorRoute
   '/split-pdf': typeof SplitPdfRoute
+  '/unlock-pdf': typeof UnlockPdfRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/qr-generator': typeof QrGeneratorRoute
   '/split-pdf': typeof SplitPdfRoute
+  '/unlock-pdf': typeof UnlockPdfRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/qr-generator'
     | '/split-pdf'
+    | '/unlock-pdf'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/qr-generator'
     | '/split-pdf'
+    | '/unlock-pdf'
   id:
     | '__root__'
     | '/'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/qr-generator'
     | '/split-pdf'
+    | '/unlock-pdf'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -210,6 +222,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   QrGeneratorRoute: typeof QrGeneratorRoute
   SplitPdfRoute: typeof SplitPdfRoute
+  UnlockPdfRoute: typeof UnlockPdfRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -312,6 +325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplitPdfRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/unlock-pdf': {
+      id: '/unlock-pdf'
+      path: '/unlock-pdf'
+      fullPath: '/unlock-pdf'
+      preLoaderRoute: typeof UnlockPdfRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -330,6 +350,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   QrGeneratorRoute: QrGeneratorRoute,
   SplitPdfRoute: SplitPdfRoute,
+  UnlockPdfRoute: UnlockPdfRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
