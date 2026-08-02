@@ -54,10 +54,10 @@ export function Footer() {
                                 <Link to="/" className="hover:text-primary transition-colors">Home</Link>
                             </li>
                             <li>
-                                <Link to="/" className="hover:text-primary transition-colors">About</Link>
+                                <Link to="/about" className="hover:text-primary transition-colors">About</Link>
                             </li>
                             <li>
-                                <Link to="/" className="hover:text-primary transition-colors">Privacy</Link>
+                                <Link to="/privacy" className="hover:text-primary transition-colors">Privacy</Link>
                             </li>
                             <li>
                                 <Link to="/" className="hover:text-primary transition-colors">Open Source</Link>

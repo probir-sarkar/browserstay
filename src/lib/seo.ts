@@ -150,6 +150,20 @@ export const metaConfigs = {
     canonicalUrl: `${BASE_URL}/password-generator`,
     keywords:
       "password generator, strong password, random password, secure password, password creator, local password generator, browserstay"
+  },
+  privacy: {
+    title: "Privacy Policy - No Data Collection, Ever | BrowserStay",
+    description:
+      "BrowserStay processes everything in your browser. We have no servers, no accounts, and no tracking. Your files and data never leave your device.",
+    canonicalUrl: `${BASE_URL}/privacy`,
+    keywords: "privacy policy, no data collection, no tracking, browser privacy, local processing, no uploads, browserstay"
+  },
+  about: {
+    title: "About BrowserStay - Free, Private, Open-Source Browser Tools",
+    description:
+      "Learn about BrowserStay: a free, open-source collection of PDF and image tools that run entirely in your browser. No uploads, no accounts, no servers — built for privacy by design.",
+    canonicalUrl: `${BASE_URL}/about`,
+    keywords: "about browserstay, open source tools, privacy tools, browser pdf tools, local processing, no uploads"
   }
 } as const;
 

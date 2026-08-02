@@ -5,10 +5,6 @@
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry",
   "workers_dev": false,
-  "assets": {
-    "directory": "./dist/client",
-    "binding": "ASSETS"
-  },
   "routes": [
     {
       "pattern": "browserstay.com",
