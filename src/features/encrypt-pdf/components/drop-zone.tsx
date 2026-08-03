@@ -6,8 +6,8 @@ import { createEncryptFile, ACCEPTED_FILE_TYPES } from "../constants";
 export function EncryptPdfDropZone() {
   const { setFile } = useEncryptPdfContext();
 
-  const handleFile = (file: File) => {
-    setFile(createEncryptFile(file));
+  const handleFile = async (file: File) => {
+    setFile(await createEncryptFile(file));
   };
 
   return (

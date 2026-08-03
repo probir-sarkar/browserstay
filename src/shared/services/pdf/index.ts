@@ -147,3 +147,5 @@ async function splitAllPages(file: File, pageCount: number, baseName: string): P
 }
 
 export const PdfService = { pdfToImages, downloadAll, getFileInfo, extractPagesAsPdf, splitAllPages };
+
+export { encryptPdf, unlockPdf, isPdfEncrypted, type EncryptPdfResult, type UnlockPdfResult } from "./pdf-security";

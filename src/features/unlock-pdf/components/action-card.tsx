@@ -1,6 +1,6 @@
 import { AlertCircle, Lock } from "lucide-react";
 import { useUnlockPdfContext } from "../context";
-import { unlockPdf } from "../services/unlock-pdf";
+import { unlockPdf } from "@/shared/services/pdf";
 import { useDownload } from "@/shared/hooks";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
