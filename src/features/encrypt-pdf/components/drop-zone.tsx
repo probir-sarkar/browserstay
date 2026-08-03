@@ -6,11 +6,14 @@ import { useRef, useState } from "react";
 
 export function EncryptPdfDropZone() {
   const processingRef = useRef(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const { fileData, setFile, setError } = useEncryptPdfContext();
 
   const handleFile = async (file: File) => {
+    if (processingRef.current) return;
+    processingRef.current = true;
+    setIsProcessing(true);
     try {
-      processingRef.current = true;
       setError(null);
       setFile(await createEncryptFile(file));
     } catch (err) {
@@ -21,6 +24,7 @@ export function EncryptPdfDropZone() {
       );
     } finally {
       processingRef.current = false;
+      setIsProcessing(false);
     }
   };
 
@@ -28,7 +32,7 @@ export function EncryptPdfDropZone() {
   if (fileData) return null;
 
   return (
-    <DropZone accept={ACCEPTED_FILE_TYPES[0]} disabled={processingRef.current} onDrop={handleFile}>
+    <DropZone accept={ACCEPTED_FILE_TYPES[0]} disabled={isProcessing} onDrop={handleFile}>
       <DropZone.Icon icon={Lock} className="text-orange-600" />
       <DropZone.Title>Drop PDF here or click to select</DropZone.Title>
       <DropZone.Description>Select a PDF file to protect with a password</DropZone.Description>
