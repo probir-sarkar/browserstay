@@ -1,4 +1,5 @@
 import { PDFDocument } from "@cantoo/pdf-lib";
+import { getBaseName } from "../file";
 
 export interface EncryptPdfResult {
   blob: Blob;
@@ -8,10 +9,6 @@ export interface EncryptPdfResult {
 export interface UnlockPdfResult {
   blob: Blob;
   fileName: string;
-}
-
-function getBaseName(file: File): string {
-  return file.name.replace(/\.pdf$/i, "");
 }
 
 async function saveToBlob(pdfDoc: PDFDocument, file: File, suffix: string): Promise<EncryptPdfResult> {
