@@ -2,15 +2,15 @@ import { Lock } from "lucide-react";
 import { useEncryptPdfContext } from "../context";
 import { DropZone } from "@/shared/components/common/drop-zone";
 import { createEncryptFile, ACCEPTED_FILE_TYPES } from "../constants";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export function EncryptPdfDropZone() {
-  const [isProcessing, setIsProcessing] = useState(false);
+  const processingRef = useRef(false);
   const { fileData, setFile, setError } = useEncryptPdfContext();
 
   const handleFile = async (file: File) => {
     try {
-      setIsProcessing(true);
+      processingRef.current = true;
       setError(null);
       setFile(await createEncryptFile(file));
     } catch (err) {
@@ -20,7 +20,7 @@ export function EncryptPdfDropZone() {
           : "Failed to read PDF. The file may be corrupt, truncated, or in an unsupported format."
       );
     } finally {
-      setIsProcessing(false);
+      processingRef.current = false;
     }
   };
 
@@ -28,7 +28,7 @@ export function EncryptPdfDropZone() {
   if (fileData) return null;
 
   return (
-    <DropZone accept={ACCEPTED_FILE_TYPES[0]} disabled={isProcessing} onDrop={handleFile}>
+    <DropZone accept={ACCEPTED_FILE_TYPES[0]} disabled={processingRef.current} onDrop={handleFile}>
       <DropZone.Icon icon={Lock} className="text-orange-600" />
       <DropZone.Title>Drop PDF here or click to select</DropZone.Title>
       <DropZone.Description>Select a PDF file to protect with a password</DropZone.Description>
