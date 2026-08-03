@@ -4,10 +4,19 @@ import { DropZone } from "@/shared/components/common/drop-zone";
 import { createEncryptFile, ACCEPTED_FILE_TYPES } from "../constants";
 
 export function EncryptPdfDropZone() {
-  const { fileData, setFile } = useEncryptPdfContext();
+  const { fileData, setFile, setError } = useEncryptPdfContext();
 
   const handleFile = async (file: File) => {
-    setFile(await createEncryptFile(file));
+    try {
+      setError(null);
+      setFile(await createEncryptFile(file));
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to read PDF. The file may be corrupt, truncated, or in an unsupported format."
+      );
+    }
   };
 
   // Hide the drop zone once a PDF has been selected
