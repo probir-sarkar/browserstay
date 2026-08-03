@@ -4,11 +4,14 @@ import { DropZone } from "@/shared/components/common/drop-zone";
 import { createEncryptFile, ACCEPTED_FILE_TYPES } from "../constants";
 
 export function EncryptPdfDropZone() {
-  const { setFile } = useEncryptPdfContext();
+  const { fileData, setFile } = useEncryptPdfContext();
 
   const handleFile = async (file: File) => {
     setFile(await createEncryptFile(file));
   };
+
+  // Hide the drop zone once a PDF has been selected
+  if (fileData) return null;
 
   return (
     <DropZone accept={ACCEPTED_FILE_TYPES[0]} onDrop={handleFile}>
