@@ -3,8 +3,3 @@ export interface UnlockPdfFile {
   fileName: string;
   fileSize: number;
 }
-
-export interface UnlockResult {
-  blob: Blob;
-  fileName: string;
-}

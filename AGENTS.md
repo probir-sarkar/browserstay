@@ -116,6 +116,6 @@ const api = Comlink.wrap<WorkerApi>(worker);
 
 1. **Don't wrap already-async operations in workers** - Check if the library handles its own threading
 2. **Don't add unnecessary abstractions** - Prefer simple functions over complex class hierarchies
-3. **Don't inline large libraries** - Use dynamic imports for heavy dependencies like PDF.js
+3. **Don't bother hand-rolling lazy imports for heavy libraries** - TanStack Router's per-route code splitting already emits libraries like `@cantoo/pdf-lib` as their own separate chunks when they're statically imported, so `await import()` gymnastics are unnecessary. Verify the chunk split in the build output before adding dynamic imports.
 4. **Don't manually spread nested objects for immutability** - Use Immer's `produce` instead
 5. **Don't import from `lodash`** - Use `es-toolkit/compat` for the same API with better performance
