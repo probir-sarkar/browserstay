@@ -20,7 +20,9 @@
       "Bash(bun add *)",
       "Bash(npm run *)",
       "Bash(bun remove *)",
-      "Bash(bunx tsc *)"
+      "Bash(bunx tsc *)",
+      "Bash(git checkout *)",
+      "Bash(bun run *)"
     ]
   }
 }
