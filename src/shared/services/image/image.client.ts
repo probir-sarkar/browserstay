@@ -1,6 +1,5 @@
 import * as Comlink from "comlink";
-import type { ImageWorkerApi } from "./image.worker";
-import type { EncodeImageOptions, ResizeWorkerOptions, CompressImageOptions, ImageTransparencyInfo } from "./types";
+import type { ImageWorkerApi, EncodeImageOptions, ResizeWorkerOptions, CompressImageOptions, ImageTransparencyInfo } from "./types";
 import pLimit from "p-limit";
 
 let worker: Worker | undefined;
@@ -8,7 +7,8 @@ let api: Comlink.Remote<ImageWorkerApi> | undefined;
 
 function getApi(): Comlink.Remote<ImageWorkerApi> {
   if (!api) {
-    worker = new Worker(new URL("./image.worker.ts", import.meta.url), {
+    // Load worker from public directory - uses esm.sh CDN for dependencies
+    worker = new Worker("/image.worker.js", {
       type: "module",
     });
     api = Comlink.wrap<ImageWorkerApi>(worker);

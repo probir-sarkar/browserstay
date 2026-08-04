@@ -1,31 +1,72 @@
-import * as Comlink from "comlink";
-import { encode as encodeJpeg, decode as decodeJpeg } from "@jsquash/jpeg";
-import { encode as encodeWebp, decode as decodeWebp } from "@jsquash/webp";
-import { encode as encodePng, decode as decodePng } from "@jsquash/png";
-import { encode as encodeAvif, decode as decodeAvif } from "@jsquash/avif";
-import type {
-  EncodeImageOptions,
-  ResizeWorkerOptions,
-  CompressImageOptions,
-  ImageFormat,
-  ImageTransparencyInfo,
-} from "./types";
+import * as Comlink from "https://esm.sh/comlink@4.4.2";
+import { encode as encodeJpeg, decode as decodeJpeg } from "https://esm.sh/@jsquash/jpeg@1.6.0/es2022/jpeg.mjs";
+import { encode as encodeWebp, decode as decodeWebp } from "https://esm.sh/@jsquash/webp@1.0.0/es2022/webp.mjs";
+import { encode as encodePng, decode as decodePng } from "https://esm.sh/@jsquash/png@1.0.0/es2022/png.mjs";
+import { encode as encodeAvif, decode as decodeAvif } from "https://esm.sh/@jsquash/avif@1.0.0/es2022/avif.mjs";
 
-export interface EncodeImageResult {
-  outputFile: File;
-  originalSize: number;
-  outputSize: number;
-  ratio: number;
-}
+/**
+ * @typedef {'jpeg' | 'png' | 'webp' | 'avif'} ImageFormat
+ */
 
-const MIME_TYPE: Record<ImageFormat, string> = {
+/**
+ * @typedef {Object} EncodeImageOptions
+ * @property {ImageFormat} outputFormat
+ * @property {number} quality
+ */
+
+/**
+ * @typedef {Object} ResizeWorkerOptions
+ * @property {ImageFormat} outputFormat
+ * @property {number} quality
+ * @property {number} targetWidth
+ * @property {number} targetHeight
+ */
+
+/**
+ * @typedef {Object} CompressImageOptions
+ * @property {ImageFormat} outputFormat
+ * @property {number} quality
+ * @property {number} [maxDimension]
+ */
+
+/**
+ * @typedef {Object} ImageTransparencyInfo
+ * @property {boolean} hasAlpha
+ * @property {number} alphaPixelPercent
+ */
+
+/**
+ * @typedef {Object} EncodeImageResult
+ * @property {File} outputFile
+ * @property {number} originalSize
+ * @property {number} outputSize
+ * @property {number} ratio
+ */
+
+/**
+ * @typedef {Object} ImageWorkerApi
+ * @property {(file: File, options: EncodeImageOptions) => Promise<EncodeImageResult>} encodeImageWorker
+ * @property {(file: File, options: ResizeWorkerOptions) => Promise<EncodeImageResult>} resizeImageWorker
+ * @property {(file: File, options: CompressImageOptions) => Promise<EncodeImageResult>} compressImageWorker
+ * @property {(file: File) => Promise<ImageTransparencyInfo>} checkImageTransparencyWorker
+ */
+
+const MIME_TYPE = {
+  /** @type {ImageFormat} */
   jpeg: "image/jpeg",
+  /** @type {ImageFormat} */
   png: "image/png",
+  /** @type {ImageFormat} */
   webp: "image/webp",
+  /** @type {ImageFormat} */
   avif: "image/avif"
 };
 
-async function decodeToImageData(file: File): Promise<ImageData> {
+/**
+ * @param {File} file
+ * @returns {Promise<ImageData>}
+ */
+async function decodeToImageData(file) {
   const buffer = await file.arrayBuffer();
   const type = file.type;
 
@@ -50,7 +91,12 @@ async function decodeToImageData(file: File): Promise<ImageData> {
   }
 }
 
-async function encodeImageData(imageData: ImageData, options: EncodeImageOptions | ResizeWorkerOptions): Promise<ArrayBuffer> {
+/**
+ * @param {ImageData} imageData
+ * @param {EncodeImageOptions | ResizeWorkerOptions | CompressImageOptions} options
+ * @returns {Promise<ArrayBuffer>}
+ */
+async function encodeImageData(imageData, options) {
   const { outputFormat, quality } = options;
   if (quality < 1 || quality > 100) throw new Error("Quality must be between 1 and 100");
   switch (outputFormat) {
@@ -63,11 +109,16 @@ async function encodeImageData(imageData: ImageData, options: EncodeImageOptions
     case "png":
       return encodePng(imageData);
     default:
-      throw new Error(`Unsupported output format: ${outputFormat as string}`);
+      throw new Error(`Unsupported output format: ${outputFormat}`);
   }
 }
 
-async function encodeImageWorker(file: File, options: EncodeImageOptions): Promise<EncodeImageResult> {
+/**
+ * @param {File} file
+ * @param {EncodeImageOptions} options
+ * @returns {Promise<EncodeImageResult>}
+ */
+async function encodeImageWorker(file, options) {
   if (!file.type.startsWith("image/")) {
     throw new Error("File must be an image");
   }
@@ -86,7 +137,12 @@ async function encodeImageWorker(file: File, options: EncodeImageOptions): Promi
   };
 }
 
-async function resizeImageWorker(file: File, options: ResizeWorkerOptions): Promise<EncodeImageResult> {
+/**
+ * @param {File} file
+ * @param {ResizeWorkerOptions} options
+ * @returns {Promise<EncodeImageResult>}
+ */
+async function resizeImageWorker(file, options) {
   if (!file.type.startsWith("image/")) {
     throw new Error("File must be an image");
   }
@@ -114,7 +170,12 @@ async function resizeImageWorker(file: File, options: ResizeWorkerOptions): Prom
   };
 }
 
-async function compressImageWorker(file: File, options: CompressImageOptions): Promise<EncodeImageResult> {
+/**
+ * @param {File} file
+ * @param {CompressImageOptions} options
+ * @returns {Promise<EncodeImageResult>}
+ */
+async function compressImageWorker(file, options) {
   if (!file.type.startsWith("image/")) {
     throw new Error("File must be an image");
   }
@@ -155,7 +216,11 @@ async function compressImageWorker(file: File, options: CompressImageOptions): P
   };
 }
 
-async function checkImageTransparencyWorker(file: File): Promise<ImageTransparencyInfo> {
+/**
+ * @param {File} file
+ * @returns {Promise<ImageTransparencyInfo>}
+ */
+async function checkImageTransparencyWorker(file) {
   const imageData = await decodeToImageData(file);
   const pixels = imageData.data;
   let alphaCount = 0;
@@ -171,7 +236,6 @@ async function checkImageTransparencyWorker(file: File): Promise<ImageTransparen
   };
 }
 
+/** @type {ImageWorkerApi} */
 const api = { encodeImageWorker, resizeImageWorker, compressImageWorker, checkImageTransparencyWorker };
-export type ImageWorkerApi = typeof api;
-
 Comlink.expose(api);
