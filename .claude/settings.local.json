@@ -21,7 +21,8 @@
       "Bash(npm run *)",
       "Bash(bun remove *)",
       "Bash(bunx tsc *)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:esm.sh)"
     ]
   }
 }
