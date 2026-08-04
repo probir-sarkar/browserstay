@@ -6,9 +6,9 @@
 // breaking the runtime module graph.
 import * as Comlink from "https://esm.sh/comlink@4.4.2";
 import { encode as encodeJpeg, decode as decodeJpeg } from "https://esm.sh/@jsquash/jpeg@1.6.0/es2022/jpeg.mjs";
-import { encode as encodeWebp, decode as decodeWebp } from "https://esm.sh/@jsquash/webp@1.0.0/es2022/webp.mjs";
-import { encode as encodePng, decode as decodePng } from "https://esm.sh/@jsquash/png@1.0.0/es2022/png.mjs";
-import { encode as encodeAvif, decode as decodeAvif } from "https://esm.sh/@jsquash/avif@1.0.0/es2022/avif.mjs";
+import { encode as encodeWebp, decode as decodeWebp } from "https://esm.sh/@jsquash/webp@1.5.0/es2022/webp.mjs";
+import { encode as encodePng, decode as decodePng } from "https://esm.sh/@jsquash/png@3.1.1/es2022/png.mjs";
+import { encode as encodeAvif, decode as decodeAvif } from "https://esm.sh/@jsquash/avif@2.1.1/es2022/avif.mjs";
 
 /** @typedef {import("../../src/shared/services/image/types").ImageFormat} ImageFormat */
 /** @typedef {import("../../src/shared/services/image/types").EncodeImageOptions} EncodeImageOptions */
@@ -81,13 +81,44 @@ async function encodeImageData(imageData, options) {
 }
 
 /**
+ * Draws ImageData onto a canvas at the given target dimensions and returns the
+ * resampled ImageData. Shared by resize and downscale-before-compress paths so
+ * resampling behavior (smoothing quality) stays consistent between them.
+ * @param {ImageData} imageData
+ * @param {number} targetWidth
+ * @param {number} targetHeight
+ * @returns {Promise<ImageData>}
+ */
+async function resampleImageData(imageData, targetWidth, targetHeight) {
+  const canvas = new OffscreenCanvas(targetWidth, targetHeight);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas 2D context not supported");
+
+  // Explicit so resampling quality doesn't silently vary across browser defaults.
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+
+  const bitmap = await createImageBitmap(imageData);
+  try {
+    ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
+  } finally {
+    bitmap.close();
+  }
+
+  return ctx.getImageData(0, 0, targetWidth, targetHeight);
+}
+
+/**
  * @param {File} file
  * @param {ImageFormat} format
  * @param {ArrayBuffer} encoded
  * @returns {EncodeImageResult}
  */
 function buildResult(file, format, encoded) {
-  const outputFile = new File([encoded], file.name, { type: MIME_TYPE[format] });
+  const mimeType = MIME_TYPE[format];
+  if (!mimeType) throw new Error(`Unsupported output format: ${format}`);
+
+  const outputFile = new File([encoded], file.name, { type: mimeType });
   const originalSize = file.size;
   const outputSize = outputFile.size;
   return {
@@ -120,18 +151,7 @@ async function resizeImageWorker(file, options) {
 
   const imageData = await decodeToImageData(file);
   const { targetWidth, targetHeight } = options;
-  const canvas = new OffscreenCanvas(targetWidth, targetHeight);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas 2D context not supported");
-
-  const bitmap = await createImageBitmap(imageData);
-  try {
-    ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
-  } finally {
-    bitmap.close();
-  }
-
-  const resizedData = ctx.getImageData(0, 0, targetWidth, targetHeight);
+  const resizedData = await resampleImageData(imageData, targetWidth, targetHeight);
   const encoded = await encodeImageData(resizedData, options);
   return buildResult(file, options.outputFormat, encoded);
 }
@@ -148,49 +168,18 @@ async function compressImageWorker(file, options) {
   const { maxDimension } = options;
 
   // Scale down to fit within maxDimension while preserving aspect ratio.
+  // Intentionally shrink-only — compression should never upscale a source image.
   if (maxDimension && maxDimension > 0 && (data.width > maxDimension || data.height > maxDimension)) {
     const scale = Math.min(maxDimension / data.width, maxDimension / data.height);
     const width = Math.round(data.width * scale);
     const height = Math.round(data.height * scale);
-
-    const canvas = new OffscreenCanvas(width, height);
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("Canvas 2D context not supported");
-
-    const bitmap = await createImageBitmap(data);
-    try {
-      ctx.drawImage(bitmap, 0, 0, width, height);
-    } finally {
-      bitmap.close();
-    }
-    data = ctx.getImageData(0, 0, width, height);
+    data = await resampleImageData(data, width, height);
   }
 
   const encoded = await encodeImageData(data, options);
   return buildResult(file, options.outputFormat, encoded);
 }
 
-/**
- * Samples up to 10,000 pixels to estimate how much of the image is transparent.
- * @param {File} file
- * @returns {Promise<ImageTransparencyInfo>}
- */
-async function checkImageTransparencyWorker(file) {
-  const imageData = await decodeToImageData(file);
-  const pixels = imageData.data;
-  let alphaCount = 0;
-  // Sample every Nth pixel for performance on large images.
-  const step = Math.max(1, Math.floor(pixels.length / 10000));
-  for (let i = 3; i < pixels.length; i += 4 * step) {
-    if (pixels[i] < 255) alphaCount++;
-  }
-  const sampleCount = Math.ceil(pixels.length / 4 / step);
-  return {
-    hasAlpha: alphaCount > 0,
-    alphaPixelPercent: sampleCount > 0 ? (alphaCount / sampleCount) * 100 : 0
-  };
-}
-
 /** @type {ImageWorkerApi} */
-const api = { encodeImageWorker, resizeImageWorker, compressImageWorker, checkImageTransparencyWorker };
+const api = { encodeImageWorker, resizeImageWorker, compressImageWorker };
 Comlink.expose(api);
