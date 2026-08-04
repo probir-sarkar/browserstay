@@ -39,5 +39,4 @@ export interface ImageWorkerApi {
   encodeImageWorker(file: File, options: EncodeImageOptions): Promise<EncodeImageResult>;
   resizeImageWorker(file: File, options: ResizeWorkerOptions): Promise<EncodeImageResult>;
   compressImageWorker(file: File, options: CompressImageOptions): Promise<EncodeImageResult>;
-  checkImageTransparencyWorker(file: File): Promise<ImageTransparencyInfo>;
 }

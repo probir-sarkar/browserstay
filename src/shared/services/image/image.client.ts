@@ -113,9 +113,6 @@ export async function compressImages(
   return Promise.all(tasks);
 }
 
-export async function checkImageTransparency(file: File): Promise<ImageTransparencyInfo> {
-  return getApi().checkImageTransparencyWorker(file);
-}
 
 export function terminateImageWorker(): void {
   worker?.terminate();
