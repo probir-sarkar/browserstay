@@ -1,68 +1,34 @@
+// @ts-check
+// This worker is served as a static module from /image.worker.js, so every import
+// must resolve in the browser at runtime (hence the CDN imports). The shared types
+// below are referenced via JSDoc `import()` only — TypeScript resolves them at
+// compile time and emits nothing, so client and worker stay in sync without
+// breaking the runtime module graph.
 import * as Comlink from "https://esm.sh/comlink@4.4.2";
 import { encode as encodeJpeg, decode as decodeJpeg } from "https://esm.sh/@jsquash/jpeg@1.6.0/es2022/jpeg.mjs";
 import { encode as encodeWebp, decode as decodeWebp } from "https://esm.sh/@jsquash/webp@1.0.0/es2022/webp.mjs";
 import { encode as encodePng, decode as decodePng } from "https://esm.sh/@jsquash/png@1.0.0/es2022/png.mjs";
 import { encode as encodeAvif, decode as decodeAvif } from "https://esm.sh/@jsquash/avif@1.0.0/es2022/avif.mjs";
 
-/**
- * @typedef {'jpeg' | 'png' | 'webp' | 'avif'} ImageFormat
- */
+/** @typedef {import("../../src/shared/services/image/types").ImageFormat} ImageFormat */
+/** @typedef {import("../../src/shared/services/image/types").EncodeImageOptions} EncodeImageOptions */
+/** @typedef {import("../../src/shared/services/image/types").ResizeWorkerOptions} ResizeWorkerOptions */
+/** @typedef {import("../../src/shared/services/image/types").CompressImageOptions} CompressImageOptions */
+/** @typedef {import("../../src/shared/services/image/types").ImageTransparencyInfo} ImageTransparencyInfo */
+/** @typedef {import("../../src/shared/services/image/types").EncodeImageResult} EncodeImageResult */
+/** @typedef {import("../../src/shared/services/image/types").ImageWorkerApi} ImageWorkerApi */
 
-/**
- * @typedef {Object} EncodeImageOptions
- * @property {ImageFormat} outputFormat
- * @property {number} quality
- */
-
-/**
- * @typedef {Object} ResizeWorkerOptions
- * @property {ImageFormat} outputFormat
- * @property {number} quality
- * @property {number} targetWidth
- * @property {number} targetHeight
- */
-
-/**
- * @typedef {Object} CompressImageOptions
- * @property {ImageFormat} outputFormat
- * @property {number} quality
- * @property {number} [maxDimension]
- */
-
-/**
- * @typedef {Object} ImageTransparencyInfo
- * @property {boolean} hasAlpha
- * @property {number} alphaPixelPercent
- */
-
-/**
- * @typedef {Object} EncodeImageResult
- * @property {File} outputFile
- * @property {number} originalSize
- * @property {number} outputSize
- * @property {number} ratio
- */
-
-/**
- * @typedef {Object} ImageWorkerApi
- * @property {(file: File, options: EncodeImageOptions) => Promise<EncodeImageResult>} encodeImageWorker
- * @property {(file: File, options: ResizeWorkerOptions) => Promise<EncodeImageResult>} resizeImageWorker
- * @property {(file: File, options: CompressImageOptions) => Promise<EncodeImageResult>} compressImageWorker
- * @property {(file: File) => Promise<ImageTransparencyInfo>} checkImageTransparencyWorker
- */
-
+/** @type {Record<ImageFormat, string>} */
 const MIME_TYPE = {
-  /** @type {ImageFormat} */
   jpeg: "image/jpeg",
-  /** @type {ImageFormat} */
   png: "image/png",
-  /** @type {ImageFormat} */
   webp: "image/webp",
-  /** @type {ImageFormat} */
   avif: "image/avif"
 };
 
 /**
+ * Decodes a File into raw pixel data. Uses the matching @jsquash codec for the
+ * file's MIME type; falls back to a generic canvas decode for other image types.
  * @param {File} file
  * @returns {Promise<ImageData>}
  */
@@ -92,6 +58,7 @@ async function decodeToImageData(file) {
 }
 
 /**
+ * Encodes ImageData into the requested format. PNG ignores quality.
  * @param {ImageData} imageData
  * @param {EncodeImageOptions | ResizeWorkerOptions | CompressImageOptions} options
  * @returns {Promise<ArrayBuffer>}
@@ -115,26 +82,32 @@ async function encodeImageData(imageData, options) {
 
 /**
  * @param {File} file
+ * @param {ImageFormat} format
+ * @param {ArrayBuffer} encoded
+ * @returns {EncodeImageResult}
+ */
+function buildResult(file, format, encoded) {
+  const outputFile = new File([encoded], file.name, { type: MIME_TYPE[format] });
+  const originalSize = file.size;
+  const outputSize = outputFile.size;
+  return {
+    outputFile,
+    originalSize,
+    outputSize,
+    ratio: originalSize > 0 ? ((originalSize - outputSize) / originalSize) * 100 : 0
+  };
+}
+
+/**
+ * @param {File} file
  * @param {EncodeImageOptions} options
  * @returns {Promise<EncodeImageResult>}
  */
 async function encodeImageWorker(file, options) {
-  if (!file.type.startsWith("image/")) {
-    throw new Error("File must be an image");
-  }
-
+  if (!file.type.startsWith("image/")) throw new Error("File must be an image");
   const imageData = await decodeToImageData(file);
   const encoded = await encodeImageData(imageData, options);
-  const outputFile = new File([encoded], file.name, {
-    type: MIME_TYPE[options.outputFormat]
-  });
-
-  return {
-    outputFile,
-    originalSize: file.size,
-    outputSize: outputFile.size,
-    ratio: ((file.size - outputFile.size) / file.size) * 100
-  };
+  return buildResult(file, options.outputFormat, encoded);
 }
 
 /**
@@ -143,31 +116,24 @@ async function encodeImageWorker(file, options) {
  * @returns {Promise<EncodeImageResult>}
  */
 async function resizeImageWorker(file, options) {
-  if (!file.type.startsWith("image/")) {
-    throw new Error("File must be an image");
-  }
+  if (!file.type.startsWith("image/")) throw new Error("File must be an image");
 
   const imageData = await decodeToImageData(file);
-  const canvas = new OffscreenCanvas(options.targetWidth, options.targetHeight);
+  const { targetWidth, targetHeight } = options;
+  const canvas = new OffscreenCanvas(targetWidth, targetHeight);
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas 2D context not supported");
 
   const bitmap = await createImageBitmap(imageData);
-  ctx.drawImage(bitmap, 0, 0, options.targetWidth, options.targetHeight);
-  bitmap.close();
+  try {
+    ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
+  } finally {
+    bitmap.close();
+  }
 
-  const resizedData = ctx.getImageData(0, 0, options.targetWidth, options.targetHeight);
+  const resizedData = ctx.getImageData(0, 0, targetWidth, targetHeight);
   const encoded = await encodeImageData(resizedData, options);
-  const outputFile = new File([encoded], file.name, {
-    type: MIME_TYPE[options.outputFormat]
-  });
-
-  return {
-    outputFile,
-    originalSize: file.size,
-    outputSize: outputFile.size,
-    ratio: ((file.size - outputFile.size) / file.size) * 100
-  };
+  return buildResult(file, options.outputFormat, encoded);
 }
 
 /**
@@ -176,47 +142,36 @@ async function resizeImageWorker(file, options) {
  * @returns {Promise<EncodeImageResult>}
  */
 async function compressImageWorker(file, options) {
-  if (!file.type.startsWith("image/")) {
-    throw new Error("File must be an image");
-  }
+  if (!file.type.startsWith("image/")) throw new Error("File must be an image");
 
-  const imageData = await decodeToImageData(file);
-  let { width, height } = imageData;
-  let data = imageData;
+  let data = await decodeToImageData(file);
+  const { maxDimension } = options;
 
-  // Auto-resize: scale down to fit within maxDimension while preserving aspect ratio
-  if (options.maxDimension && options.maxDimension > 0) {
-    const max = options.maxDimension;
-    if (width > max || height > max) {
-      const ratio = Math.min(max / width, max / height);
-      width = Math.round(width * ratio);
-      height = Math.round(height * ratio);
+  // Scale down to fit within maxDimension while preserving aspect ratio.
+  if (maxDimension && maxDimension > 0 && (data.width > maxDimension || data.height > maxDimension)) {
+    const scale = Math.min(maxDimension / data.width, maxDimension / data.height);
+    const width = Math.round(data.width * scale);
+    const height = Math.round(data.height * scale);
 
-      const canvas = new OffscreenCanvas(width, height);
-      const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("Canvas 2D context not supported");
+    const canvas = new OffscreenCanvas(width, height);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas 2D context not supported");
 
-      const bitmap = await createImageBitmap(data);
+    const bitmap = await createImageBitmap(data);
+    try {
       ctx.drawImage(bitmap, 0, 0, width, height);
+    } finally {
       bitmap.close();
-      data = ctx.getImageData(0, 0, width, height);
     }
+    data = ctx.getImageData(0, 0, width, height);
   }
 
   const encoded = await encodeImageData(data, options);
-  const outputFile = new File([encoded], file.name, {
-    type: MIME_TYPE[options.outputFormat],
-  });
-
-  return {
-    outputFile,
-    originalSize: file.size,
-    outputSize: outputFile.size,
-    ratio: ((file.size - outputFile.size) / file.size) * 100,
-  };
+  return buildResult(file, options.outputFormat, encoded);
 }
 
 /**
+ * Samples up to 10,000 pixels to estimate how much of the image is transparent.
  * @param {File} file
  * @returns {Promise<ImageTransparencyInfo>}
  */
@@ -224,7 +179,7 @@ async function checkImageTransparencyWorker(file) {
   const imageData = await decodeToImageData(file);
   const pixels = imageData.data;
   let alphaCount = 0;
-  // Sample every Nth pixel for performance on large images
+  // Sample every Nth pixel for performance on large images.
   const step = Math.max(1, Math.floor(pixels.length / 10000));
   for (let i = 3; i < pixels.length; i += 4 * step) {
     if (pixels[i] < 255) alphaCount++;
@@ -232,7 +187,7 @@ async function checkImageTransparencyWorker(file) {
   const sampleCount = Math.ceil(pixels.length / 4 / step);
   return {
     hasAlpha: alphaCount > 0,
-    alphaPixelPercent: sampleCount > 0 ? (alphaCount / sampleCount) * 100 : 0,
+    alphaPixelPercent: sampleCount > 0 ? (alphaCount / sampleCount) * 100 : 0
   };
 }
 
