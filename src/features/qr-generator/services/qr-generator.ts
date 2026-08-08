@@ -104,7 +104,19 @@ function buildPayload(
       const lat = geoConfig.latitude.trim();
       const lng = geoConfig.longitude.trim();
       if (!lat || !lng) throw new Error("Enter both latitude and longitude.");
-      return `geo:${lat},${lng}`;
+      const latitude = Number(lat);
+      const longitude = Number(lng);
+      if (
+        !Number.isFinite(latitude) ||
+        !Number.isFinite(longitude) ||
+        latitude < -90 ||
+        latitude > 90 ||
+        longitude < -180 ||
+        longitude > 180
+      ) {
+        throw new Error("Enter valid latitude (-90 to 90) and longitude (-180 to 180).");
+      }
+      return `geo:${latitude},${longitude}`;
     }
 
     case "wifi": {
