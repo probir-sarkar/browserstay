@@ -5,6 +5,7 @@ import { useImageResizeContext } from "../context";
 import { calculateTargetDimensions } from "../services/image-resize";
 import { resizeImages } from "@/shared/services";
 import { downloadBlob } from "@/shared/services/download";
+import { createZip } from "@/shared/services/zip";
 import { getBaseName } from "@/shared/services/file";
 import type { ImageFormat } from "@/shared/services/image/types";
 
@@ -57,7 +58,6 @@ export function ImageResizeActionCard() {
         const fileName = `${getBaseName(results[0].input.file)}_resized.${ext}`;
         downloadBlob(outputFile, fileName);
       } else {
-        const { createZip } = await import("@/shared/services/zip");
         const filesMap: Record<string, File> = {};
         for (const { input, result } of results) {
           const ext = result.outputFile.type.split("/")[1];

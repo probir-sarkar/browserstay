@@ -1,32 +1,28 @@
-import { useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { Loader2, Download, RefreshCw } from "lucide-react";
-import { useQRGeneratorState } from "../context";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip";
+import { useClipboard } from "@/shared/hooks";
+import { Loader2, Download, Copy, Check, RefreshCw } from "lucide-react";
+import { useQRGeneratorContext } from "../context";
+import { downloadPng, downloadSvg } from "../services/qr-generator";
 
 export function QRGeneratorActionCard() {
-  const { qrCodeUrl, isGenerating, error, settings, generateQR, reset } = useQRGeneratorState();
+  const { result, isProcessing, error, generateQR, reset, setError } = useQRGeneratorContext();
+  const clipboard = useClipboard({ timeout: 2000 });
 
-  const [isDownloading, setIsDownloading] = useState(false);
-
-  const handleGenerate = () => {
-    generateQR();
+  const handleGenerate = async () => {
+    setError(null);
+    await generateQR();
   };
 
-  const handleDownload = () => {
-    if (!qrCodeUrl) return;
+  const handleDownloadPng = () => {
+    if (!result) return;
+    downloadPng(result.png, `qrcode-${Date.now()}.png`);
+  };
 
-    setIsDownloading(true);
-    try {
-      const link = document.createElement('a');
-      link.href = qrCodeUrl;
-      link.download = `qrcode-${Date.now()}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } finally {
-      setIsDownloading(false);
-    }
+  const handleDownloadSvg = () => {
+    if (!result) return;
+    downloadSvg(result.svg, `qrcode-${Date.now()}.svg`);
   };
 
   return (
@@ -41,81 +37,59 @@ export function QRGeneratorActionCard() {
           </div>
         )}
 
-        {qrCodeUrl && (
-          <div className="flex flex-col items-center gap-4">
-            <div className="p-4 bg-white rounded-lg border-2 border-border">
-              <img
-                src={qrCodeUrl}
-                alt="Generated QR Code"
-                style={{ width: `${Math.min(settings.size, 300)}px`, height: `${Math.min(settings.size, 300)}px` }}
-                className="block"
-              />
-            </div>
-            <p className="text-sm text-muted-foreground text-center">
-              Your QR code is ready! Click download to save it.
-            </p>
-          </div>
-        )}
-
-        {!qrCodeUrl && !isGenerating && (
-          <div className="text-center py-8">
-            <p className="text-sm text-muted-foreground">
-              Enter your content and click generate to create your QR code.
-            </p>
-          </div>
-        )}
-
-        {isGenerating && (
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">Generating QR code...</p>
-          </div>
+        {result ? (
+          <p className="text-sm text-muted-foreground">
+            Ready to save. Download as PNG or SVG, or copy the vector code.
+          </p>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Fill in your content above, then generate your QR code.
+          </p>
         )}
       </CardContent>
       <CardFooter className="flex-col gap-2">
-        <div className="flex gap-2 w-full">
-          <Button
-            className="flex-1"
-            size="lg"
-            onClick={handleGenerate}
-            disabled={isGenerating}
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <RefreshCw className="mr-2 h-4 w-4" />
-                {qrCodeUrl ? 'Regenerate' : 'Generate'}
-              </>
-            )}
-          </Button>
-
-          {qrCodeUrl && (
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={handleDownload}
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Download className="h-4 w-4" />
-              )}
-            </Button>
+        <Button className="w-full" size="lg" onClick={handleGenerate} disabled={isProcessing}>
+          {isProcessing ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            <>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              {result ? "Regenerate" : "Generate QR Code"}
+            </>
           )}
-        </div>
+        </Button>
 
-        {qrCodeUrl && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={reset}
-            className="w-full"
-          >
+        {result && (
+          <div className="grid w-full grid-cols-3 gap-2">
+            <Button variant="outline" onClick={handleDownloadPng}>
+              <Download className="h-4 w-4" />
+              PNG
+            </Button>
+            <Button variant="outline" onClick={handleDownloadSvg}>
+              <Download className="h-4 w-4" />
+              SVG
+            </Button>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button variant="outline" onClick={() => clipboard.copy(result.svg)}>
+                    {clipboard.copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    {clipboard.copied ? "Copied" : "Copy"}
+                  </Button>
+                }
+              />
+              <TooltipContent>
+                <p>Copy the SVG code for use in designs</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        )}
+
+        {result && (
+          <Button variant="ghost" size="sm" onClick={reset} className="w-full">
             Start Over
           </Button>
         )}

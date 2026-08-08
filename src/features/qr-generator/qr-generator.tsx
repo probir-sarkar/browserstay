@@ -1,23 +1,22 @@
 import { QRGeneratorInput } from "./components/generator";
 import { QRGeneratorSettings } from "./components/settings";
+import { QRGeneratorPreview } from "./components/preview";
 import { QRGeneratorActionCard } from "./components/action-card";
-import { QRGeneratorFaq } from "./components/faq";
 
 export function QRGenerator() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Left Column - Input */}
-      <div className="lg:col-span-2">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Left column — content entry + settings */}
+      <div className="lg:col-span-2 space-y-6">
         <QRGeneratorInput />
+        <QRGeneratorSettings />
       </div>
 
-      {/* Right Column - Settings & Actions */}
+      {/* Right column — live preview + generate/download */}
       <div className="space-y-6">
-        <QRGeneratorSettings />
+        <QRGeneratorPreview />
         <QRGeneratorActionCard />
       </div>
     </div>
   );
 }
-
-export { QRGeneratorFaq };
