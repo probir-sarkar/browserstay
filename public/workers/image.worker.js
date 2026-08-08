@@ -4,11 +4,11 @@
 // below are referenced via JSDoc `import()` only — TypeScript resolves them at
 // compile time and emits nothing, so client and worker stay in sync without
 // breaking the runtime module graph.
-import * as Comlink from "https://esm.sh/comlink@4.4.2";
-import { encode as encodeJpeg, decode as decodeJpeg } from "https://esm.sh/@jsquash/jpeg@1.6.0/es2022/jpeg.mjs";
-import { encode as encodeWebp, decode as decodeWebp } from "https://esm.sh/@jsquash/webp@1.5.0/es2022/webp.mjs";
-import { encode as encodePng, decode as decodePng } from "https://esm.sh/@jsquash/png@3.1.1/es2022/png.mjs";
-import { encode as encodeAvif, decode as decodeAvif } from "https://esm.sh/@jsquash/avif@2.1.1/es2022/avif.mjs";
+import * as Comlink from "https://cdn.jsdelivr.net/npm/comlink@4.4.2/+esm";
+import { encode as encodeJpeg, decode as decodeJpeg } from "https://cdn.jsdelivr.net/npm/@jsquash/jpeg@1.6.0/+esm";
+import { encode as encodeWebp, decode as decodeWebp } from "https://cdn.jsdelivr.net/npm/@jsquash/webp@1.5.0/+esm";
+import { encode as encodePng, decode as decodePng } from "https://cdn.jsdelivr.net/npm/@jsquash/png@3.1.1/+esm";
+import { encode as encodeAvif, decode as decodeAvif } from "https://cdn.jsdelivr.net/npm/@jsquash/avif@2.1.1/+esm";
 
 /** @typedef {import("../../src/shared/services/image/types").ImageFormat} ImageFormat */
 /** @typedef {import("../../src/shared/services/image/types").EncodeImageOptions} EncodeImageOptions */

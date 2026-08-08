@@ -7,7 +7,7 @@ let api: Comlink.Remote<ImageWorkerApi> | undefined;
 
 function getApi(): Comlink.Remote<ImageWorkerApi> {
   if (!api) {
-    // Load worker from public directory - uses esm.sh CDN for dependencies
+    // Load worker from public directory - uses jsdelivr CDN for dependencies
     worker = new Worker("/workers/image.worker.js", {
       type: "module",
     });
