@@ -1,81 +1,197 @@
-import type { QRSettings, QRContentType, WiFiConfig, VCardConfig } from "../types";
+import type { QRSettings, QRContentType, WiFiConfig, VCardConfig, SmsConfig, GeoConfig } from "../types";
 import { COLOR_MAP } from "../constants";
+import QRCode from "qrcode";
 
 export interface GenerateQROptions {
   content: string;
   contentType: QRContentType;
   wifiConfig: WiFiConfig;
   vcardConfig: VCardConfig;
+  smsConfig: SmsConfig;
+  geoConfig: GeoConfig;
   settings: QRSettings;
 }
 
-export async function generateQRCode(options: GenerateQROptions): Promise<string> {
-  const { content, contentType, wifiConfig, vcardConfig, settings } = options;
+export interface GenerateQRResult {
+  /** SVG string for crisp, scalable output and copy-to-clipboard. */
+  svg: string;
+  /** PNG data URL rendered at the configured size. */
+  png: string;
+  /** The exact payload that was encoded. */
+  payload: string;
+}
 
-  let qrContent = content;
+/** Splits a hex color like `#RRGGBB` into `[r, g, b]` values. */
+function hexToRgb(hex: string): [number, number, number] | null {
+  const match = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!match) return null;
+  const value = parseInt(match[1], 16);
+  return [(value >> 16) & 0xff, (value >> 8) & 0xff, value & 0xff];
+}
 
-  // Generate content based on type
+/**
+ * Computes a rough luminance contrast ratio (WCAG-style) between two hex colors.
+ * Returns `null` when either color is invalid, so callers can skip the check.
+ */
+export function getContrastRatio(dark: string, light: string): number | null {
+  const a = hexToRgb(dark);
+  const b = hexToRgb(light);
+  if (!a || !b) return null;
+
+  const luminance = (rgb: [number, number, number]) => {
+    const [r, g, bl] = rgb.map((channel) => {
+      const c = channel / 255;
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+  };
+
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+function resolveColors(settings: QRSettings): { dark: string; light: string } {
+  const dark = settings.color === "custom" ? settings.customColor || "#000000" : COLOR_MAP[settings.color] || COLOR_MAP.black;
+  const light = settings.transparent ? "#00000000" : settings.backgroundColor;
+  return { dark, light };
+}
+
+/**
+ * Builds the payload that gets encoded based on the selected content type.
+ * Throws a user-facing error when required fields are missing.
+ */
+function buildPayload(
+  contentType: QRContentType,
+  content: string,
+  wifiConfig: WiFiConfig,
+  vcardConfig: VCardConfig,
+  smsConfig: SmsConfig,
+  geoConfig: GeoConfig
+): string {
   switch (contentType) {
-    case 'wifi': {
-      if (!wifiConfig.ssid) {
-        throw new Error('SSID is required for WiFi QR codes');
-      }
-      qrContent = `WIFI:T:${wifiConfig.encryption};S:${wifiConfig.ssid};P:${wifiConfig.password};H:${wifiConfig.hidden};;`;
-      break;
+    case "url": {
+      const trimmed = content.trim();
+      if (!trimmed) throw new Error("Enter a URL to encode.");
+      return trimmed.startsWith("http://") || trimmed.startsWith("https://") ? trimmed : `https://${trimmed}`;
     }
 
-    case 'vcard': {
-      const vcard = `BEGIN:VCARD
-VERSION:3.0
-N:${vcardConfig.lastName};${vcardConfig.firstName}
-FN:${vcardConfig.firstName} ${vcardConfig.lastName}
-ORG:${vcardConfig.organization}
-TEL:${vcardConfig.phone}
-EMAIL:${vcardConfig.email}
-URL:${vcardConfig.website}
-END:VCARD`;
-      qrContent = vcard;
-      break;
+    case "text": {
+      const trimmed = content.trim();
+      if (!trimmed) throw new Error("Enter some text to encode.");
+      return trimmed;
     }
 
-    case 'text': {
-      if (!content.trim()) {
-        throw new Error('Text content is required');
-      }
-      qrContent = content;
-      break;
+    case "email": {
+      const trimmed = content.trim();
+      if (!trimmed) throw new Error("Enter an email address to encode.");
+      return `mailto:${trimmed}`;
     }
 
-    case 'url': {
-      if (!content.trim()) {
-        throw new Error('URL is required');
-      }
-      qrContent = content.startsWith('http') ? content : `https://${content}`;
-      break;
+    case "phone": {
+      const trimmed = content.trim();
+      if (!trimmed) throw new Error("Enter a phone number to encode.");
+      return `tel:${trimmed}`;
+    }
+
+    case "sms": {
+      const phone = smsConfig.phone.trim();
+      if (!phone) throw new Error("Enter a phone number for the SMS.");
+      const message = smsConfig.message.trim();
+      return message ? `SMSTO:${phone}:${message}` : `SMSTO:${phone}`;
+    }
+
+    case "geo": {
+      const lat = geoConfig.latitude.trim();
+      const lng = geoConfig.longitude.trim();
+      if (!lat || !lng) throw new Error("Enter both latitude and longitude.");
+      return `geo:${lat},${lng}`;
+    }
+
+    case "wifi": {
+      if (!wifiConfig.ssid.trim()) throw new Error("Enter the WiFi network name (SSID).");
+      const ssid = escapeWifiValue(wifiConfig.ssid);
+      const password = escapeWifiValue(wifiConfig.password);
+      const hidden = wifiConfig.hidden ? "true" : "false";
+      return `WIFI:T:${wifiConfig.encryption};S:${ssid};P:${password};H:${hidden};;`;
+    }
+
+    case "vcard": {
+      const firstName = vcardConfig.firstName.trim();
+      const lastName = vcardConfig.lastName.trim();
+      if (!firstName && !lastName) throw new Error("Enter at least a first or last name.");
+      const fullName = `${firstName} ${lastName}`.trim();
+      const parts = [
+        "BEGIN:VCARD",
+        "VERSION:3.0",
+        `N:${lastName};${firstName}`,
+        `FN:${fullName}`,
+        vcardConfig.organization.trim() && `ORG:${vcardConfig.organization.trim()}`,
+        vcardConfig.phone.trim() && `TEL:${vcardConfig.phone.trim()}`,
+        vcardConfig.email.trim() && `EMAIL:${vcardConfig.email.trim()}`,
+        vcardConfig.website.trim() && `URL:${vcardConfig.website.trim()}`,
+        "END:VCARD",
+      ]
+        .filter(Boolean)
+        .join("\n");
+      return parts;
     }
   }
+}
 
-  // Dynamic import for QR code generation
-  const QRCode = await import('qrcode');
-  const canvas = document.createElement('canvas');
+/** Escapes characters that have special meaning in the WiFi QR payload. */
+function escapeWifiValue(value: string): string {
+  return value.replace(/([\\;,:"])/g, "\\$1");
+}
 
-  // Determine color
-  let color: string;
-  if (settings.color === 'custom') {
-    color = settings.customColor || '#000000';
-  } else {
-    color = COLOR_MAP[settings.color] || '#000000';
+export async function generateQRCode(options: GenerateQROptions): Promise<GenerateQRResult> {
+  const { content, contentType, wifiConfig, vcardConfig, smsConfig, geoConfig, settings } = options;
+
+  const payload = buildPayload(contentType, content, wifiConfig, vcardConfig, smsConfig, geoConfig);
+  const { dark, light } = resolveColors(settings);
+
+  const contrast = getContrastRatio(dark, light);
+  if (contrast !== null && contrast < 2.2) {
+    throw new Error("The QR code colors are too low-contrast to scan reliably. Pick a darker code color or a lighter background.");
   }
 
-  await QRCode.toCanvas(canvas, qrContent, {
-    width: settings.size,
-    margin: 2,
-    color: {
-      dark: color,
-      light: settings.backgroundColor,
-    },
-    errorCorrectionLevel: settings.errorCorrectionLevel,
-  });
+  const [svg, png] = await Promise.all([
+    QRCode.toString(payload, {
+      type: "svg",
+      margin: settings.margin,
+      width: settings.size,
+      color: { dark, light },
+      errorCorrectionLevel: settings.errorCorrectionLevel,
+    }),
+    QRCode.toDataURL(payload, {
+      margin: settings.margin,
+      width: settings.size,
+      color: { dark, light },
+      errorCorrectionLevel: settings.errorCorrectionLevel,
+    }),
+  ]);
 
-  return canvas.toDataURL('image/png');
+  return { svg, png, payload };
+}
+
+/** Downloads a PNG data URL as a file. */
+export function downloadPng(png: string, filename: string): void {
+  const link = document.createElement("a");
+  link.href = png;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+/** Downloads an SVG string as a file. */
+export function downloadSvg(svg: string, filename: string): void {
+  const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }

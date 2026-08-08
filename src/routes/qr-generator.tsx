@@ -1,38 +1,53 @@
-import { createFileRoute, ClientOnly } from '@tanstack/react-router'
-import { PageHeader } from "@/shared/components/layout/page-header"
-import { HowItWorks } from "@/shared/components/layout/how-it-works"
-import { FAQSection } from "@/shared/components/layout/faq-section"
-import { QRGenerator } from "@/features/qr-generator/qr-generator"
-import { QRGeneratorProvider } from "@/features/qr-generator"
-import { generateMetaFromKey } from "@/lib/seo"
+import { createFileRoute } from '@tanstack/react-router'
+import { PageHeader } from "@/shared/components/layout/page-header";
+import { HowItWorks } from "@/shared/components/layout/how-it-works";
+import { FAQSection } from "@/shared/components/layout/faq-section";
+import { QRGenerator } from "@/features/qr-generator/qr-generator";
+import { QRGeneratorProvider } from "@/features/qr-generator";
+import { generateMetaFromKey } from "@/lib/seo";
 
 const qrGeneratorFaqItems = [
   {
     question: "What can I create QR codes for?",
-    answer: "You can create QR codes for website URLs, plain text, WiFi network credentials, and contact information (vCards). Each type serves a different purpose - URLs for websites, WiFi for easy network sharing, and vCards for sharing contacts."
+    answer:
+      "URLs, plain text, email addresses, phone numbers, SMS messages, map coordinates, WiFi credentials, and contact information (vCards). Each type opens the right app on the scanner's phone.",
+  },
+  {
+    question: "What is the difference between PNG and SVG?",
+    answer:
+      "PNG is a raster image — great for sharing and printing at a fixed size. SVG is a vector format that scales to any size without losing quality, which makes it ideal for logos, print design, and other professional uses.",
   },
   {
     question: "What size should my QR code be?",
-    answer: "For print materials, 300-400px is recommended. For digital use, 200-300px is sufficient. Larger QR codes are easier to scan from a distance. Our generator allows sizes from 200-600px."
+    answer:
+      "For digital use, 256-384px is usually plenty. For print materials, 512px or larger is recommended. Larger QR codes are easier to scan from a distance. You can also download as SVG to get a resolution-independent file.",
   },
   {
     question: "What is error correction level?",
-    answer: "Error correction allows QR codes to be scanned even if partially damaged or obscured. Higher levels (H, Q) can recover more data but result in larger QR codes. Medium (M) is recommended for most use cases."
+    answer:
+      "Error correction lets QR codes be scanned even if partially damaged or obscured. Higher levels (H, Q) recover more data but produce larger codes. Medium (M) is a good default; High (H) is best for print where codes may get scratched.",
   },
   {
-    question: "Can I customize QR code colors?",
-    answer: "Yes! You can choose from preset colors or use a custom hex color. Ensure good contrast between the QR code and background for reliable scanning. Dark colors on light backgrounds work best."
+    question: "Can I customize the colors and background?",
+    answer:
+      "Yes. Pick from preset foreground colors or set any custom hex color, and choose a background color — including a transparent background for placing the QR code on top of your own designs. Keep the contrast high so scanners can read it.",
+  },
+  {
+    question: "What is the quiet zone?",
+    answer:
+      "The quiet zone is the empty border around the QR code that helps scanners locate it. A standard 4-module border is safest, but you can reduce it when space is tight.",
   },
   {
     question: "Are these QR codes free to use?",
-    answer: "Yes! All QR codes generated are completely free and can be used for any purpose - personal or commercial. There are no watermarks, usage limits, or expiration dates."
-  }
+    answer:
+      "Yes! All QR codes are generated entirely in your browser — nothing is uploaded to a server. They're free for personal and commercial use with no watermarks, limits, or expiration dates.",
+  },
 ];
 
-export const Route = createFileRoute('/qr-generator')({
+export const Route = createFileRoute("/qr-generator")({
   component: QRGeneratorPage,
-  head: () => generateMetaFromKey('qrGenerator'),
-})
+  head: () => generateMetaFromKey("qrGenerator"),
+});
 
 function QRGeneratorPage() {
   return (
@@ -40,29 +55,27 @@ function QRGeneratorPage() {
       <div className="max-w-6xl mx-auto">
         <PageHeader
           title="QR Code Generator"
-          subtitle="Create custom QR codes for URLs, text, WiFi credentials, and contact information. Customize colors, sizes, and error correction levels. 100% free and private."
+          subtitle="Create custom QR codes for URLs, text, email, phone, WiFi, locations, and more. Customize colors, sizes, and error correction. 100% free, private, and generated in your browser."
         />
 
-        <ClientOnly fallback={<div className="h-64 bg-muted animate-pulse rounded-lg" />}>
-          <QRGeneratorProvider>
-            <QRGenerator />
-          </QRGeneratorProvider>
-        </ClientOnly>
+        <QRGeneratorProvider>
+          <QRGenerator />
+        </QRGeneratorProvider>
 
         <section className="mb-24">
           <HowItWorks
             steps={[
               {
                 title: "Choose Content Type",
-                description: "Select URL, text, WiFi, or contact information for your QR code."
+                description: "Pick what your QR code should do — open a URL, join WiFi, call a number, and more.",
               },
               {
                 title: "Customize Appearance",
-                description: "Set the size, colors, and error correction level for your needs."
+                description: "Set the size, colors, error correction, and quiet zone to match your brand.",
               },
               {
                 title: "Generate & Download",
-                description: "Click generate to create your QR code, then download it in high quality."
+                description: "Get a crisp PNG or scalable SVG, or copy the code directly for your designs.",
               }
             ]}
             description="Create professional QR codes in three simple steps. Fast, secure, and purely client-side."
@@ -74,5 +87,5 @@ function QRGeneratorPage() {
         </section>
       </div>
     </main>
-  )
+  );
 }
